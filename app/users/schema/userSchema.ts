@@ -1,0 +1,11 @@
+import { z } from "zod";
+
+export const userSchema = z.object({
+    name: z.string({ message: "Name is required" }).min(1, "Name is required"),
+    email: z.email({ message: "Email is required" }),
+    mobile: z.string({ message: "Mobile is required" }),
+    password: z.string({ message: "Password is required" }),
+    company: z.string({ message: "Company is required" })
+})
+
+export type UserSchemaType = z.infer<typeof userSchema>
