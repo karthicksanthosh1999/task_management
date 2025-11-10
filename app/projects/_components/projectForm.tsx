@@ -22,13 +22,15 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { IProject } from "@/app/types/projectTypes";
-import { useAppSelector } from "@/app/hooks/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
+import { useEffect } from "react";
+import { createProjectThunk } from "@/app/features/projectSlices";
+import { toast } from "sonner";
 
 interface IProps {
   open: boolean;
@@ -36,19 +38,24 @@ interface IProps {
 }
 
 const ProjectForm = ({ open, setOpen }: IProps) => {
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
 
   const form = useForm({
     resolver: zodResolver(projectValidationSchema),
-    defaultValues: {
-      userId: user?.id,
-    },
   });
+  useEffect(() => {
+    form.reset({
+      ...form.getValues(),
+      userId: user?.id,
+    });
+  }, [form, user]);
 
   const handleOnSubmit = async (values: IProject) => {
-    console.log(values);
+    dispatch(createProjectThunk(values));
+    handleReset();
+    toast.success("Project Created Successfully...🎉");
   };
-
   const handleReset = () => {
     form.reset();
     setOpen(false);
@@ -89,8 +96,8 @@ const ProjectForm = ({ open, setOpen }: IProps) => {
                   <FormItem>
                     <Input
                       placeholder="Enter the Start Date"
-                      {...field}
                       type="date"
+                      {...field}
                     />
                     <FormMessage />
                   </FormItem>
@@ -98,19 +105,21 @@ const ProjectForm = ({ open, setOpen }: IProps) => {
               />
             </div>
             <div className="space-y-3">
-              <FormLabel>Select State </FormLabel>
+              <FormLabel>Select State</FormLabel>
               <FormField
                 name="state"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <Select>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      name={field.name}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a fruit" />
+                        <SelectValue placeholder="Select State" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>Fruits</SelectLabel>
                           {["Pending", "Completed", "Planning", "Progress"].map(
                             (item, idx) => (
                               <SelectItem value={item} key={idx}>

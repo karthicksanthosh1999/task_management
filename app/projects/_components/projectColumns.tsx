@@ -1,29 +1,30 @@
 "use client";
+import { deleteProjectThunk } from "@/app/features/projectSlices";
 import { deleteUserThunk } from "@/app/features/userSlices";
 import { useAppDispatch } from "@/app/hooks/reduxHooks";
-import { IUser } from "@/app/types/userTypes";
+import { IProject } from "@/app/types/projectTypes";
 import DeleteModel from "@/components/delete-model";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export const UserColumns: ColumnDef<IUser>[] = [
+export const ProjectColumns: ColumnDef<IProject>[] = [
   {
-    accessorKey: "name",
-    header: "Full Name",
+    accessorKey: "title",
+    header: "Project Title",
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "state",
+    header: "Project Status",
   },
   {
-    accessorKey: "mobile",
-    header: "Phone No",
+    accessorKey: "startDate",
+    header: "Start Date",
   },
   {
-    accessorKey: "company",
-    header: "Company",
+    accessorKey: "endDate",
+    header: "End Date",
   },
   {
     header: "Actions",
@@ -35,8 +36,8 @@ export const UserColumns: ColumnDef<IUser>[] = [
       const handleDelete = async () => {
         try {
           if (id) {
-            await dispatch(deleteUserThunk(id)).unwrap();
-            toast.success("User Deleted Successfully...👍");
+            await dispatch(deleteProjectThunk({ userId: id })).unwrap();
+            toast.success("Project Deleted Successfully...👍");
           }
         } catch (error) {
           toast.error("Something went wrong...❌");
@@ -59,8 +60,8 @@ export const UserColumns: ColumnDef<IUser>[] = [
             setOpen={setOpen}
             deleteId={id ?? ""}
             confirmDelete={handleDelete}
-            description="Are you sure you want to the user?"
-            title="Delete User"
+            description="Are you sure you want to the Project?"
+            title="Delete Project"
           />
         </div>
       );

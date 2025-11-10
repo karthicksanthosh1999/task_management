@@ -1,7 +1,14 @@
-import React from "react";
+"use client";
+import { WorkDataTable } from "./_components/work_table";
+import { WorkColumns } from "./_components/work_columns";
 
 const page = () => {
-  return <div>Welcome to the work page</div>;
+  const data = [];
+  return (
+    <div>
+      <WorkDataTable data={data ?? []} columns={WorkColumns} isLoading={true} />
+    </div>
+  );
 };
 
 export default page;

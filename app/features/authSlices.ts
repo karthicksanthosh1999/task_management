@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IUser } from "../types/userTypes";
 import axios from "axios";
 import { TLoginTypes } from "../types/loginTypes";
-import { useRouter } from "next/router";
 
 interface IInitialState {
   loading: boolean;

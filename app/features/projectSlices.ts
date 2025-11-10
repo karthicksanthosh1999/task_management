@@ -51,7 +51,7 @@ export const updateProjectThunk = createAsyncThunk<
   { rejectValue: string }
 >("project/update", async ({ userId, project }, { rejectWithValue }) => {
   try {
-    const response = await axios.put(`/api/project/${userId}`, project);
+    const response = await axios.put(`/api/projects/id?${userId}`, project);
     return response.data?.data!;
   } catch (error) {
     return rejectWithValue(
@@ -66,7 +66,7 @@ export const deleteProjectThunk = createAsyncThunk<
   { rejectValue: string }
 >("project/delete", async ({ userId }, { rejectWithValue }) => {
   try {
-    const response = await axios.delete(`/api/project/${userId}`);
+    const response = await axios.delete(`/api/projects/${userId}`);
     return response.data?.data!;
   } catch (error) {
     return rejectWithValue(
@@ -95,3 +95,6 @@ export const projectSlices = createSlice({
       });
   },
 });
+
+export default projectSlices.reducer;
+export const projectActions = projectSlices.actions;
