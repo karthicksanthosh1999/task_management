@@ -59,7 +59,6 @@ const WorkForm = ({ existingWork, mode = "create", setModelOpen }: Props) => {
   }, [form, session]);
 
   const onSubmit = (value: TWorkSchemaType) => {
-    console.log(value);
   };
 
   return (

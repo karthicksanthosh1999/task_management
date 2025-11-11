@@ -8,11 +8,21 @@ export interface IProject {
   startDate: Date;
   endDate: Date;
 
-  User: IUser;
+  User?: IUser;
 }
-enum EStats {
+
+export enum EStats {
   Pending,
   Completed,
   Planning,
   Progress,
+}
+
+
+export interface TProjectFilter {
+  userId?: string;
+  search?: string;
+  state?: EStats;
+  startDate?: Date;
+  endDate?: Date;
 }

@@ -60,7 +60,6 @@ export const deleteUserThunk = createAsyncThunk<IUser, string, { rejectValue: st
   async (userId, { rejectWithValue }) => {
     try {
       const response = await axios.delete<IResponseType<IUser>>(`/api/users/?id=${userId}`);
-      console.log(response.data)
       return response.data.data!;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to delete user");

@@ -26,18 +26,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { IProject } from "@/app/types/projectTypes";
+import { EStats, IProject } from "@/app/types/projectTypes";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
 import { useEffect } from "react";
-import { createProjectThunk } from "@/app/features/projectSlices";
+import { createProjectThunk, updateProjectThunk } from "@/app/features/projectSlices";
 import { toast } from "sonner";
+import { CustomDatePicker } from "@/components/CustomDatePicker";
 
 interface IProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  mode: "Create" | "Update",
+  updateProject?: IProject
 }
 
-const ProjectForm = ({ open, setOpen }: IProps) => {
+const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
 
@@ -51,11 +54,32 @@ const ProjectForm = ({ open, setOpen }: IProps) => {
     });
   }, [form, user]);
 
+  useEffect(() => {
+    if (updateProject) {
+      form.reset({
+        title: updateProject.title ?? "",
+        state: updateProject.state ?? "Completed",
+        startDate: updateProject.startDate ? new Date(updateProject.startDate) : new Date(),
+        endDate: updateProject.endDate ? new Date(updateProject.endDate) : new Date(),
+        userId: user?.id ?? "",
+      });
+    }
+  }, [updateProject, user, form]);
+
+
   const handleOnSubmit = async (values: IProject) => {
-    dispatch(createProjectThunk(values));
+    if (mode === "Create") {
+      dispatch(createProjectThunk(values));
+      toast.success("Project Created Successfully...🎉");
+    } else {
+      if (updateProject?.id && values) {
+        dispatch(updateProjectThunk({ project: values, id: updateProject?.id }));
+        toast.success("Project Updated Successfully...🎉");
+      }
+    }
     handleReset();
-    toast.success("Project Created Successfully...🎉");
   };
+
   const handleReset = () => {
     form.reset();
     setOpen(false);
@@ -88,23 +112,6 @@ const ProjectForm = ({ open, setOpen }: IProps) => {
               />
             </div>
             <div className="space-y-3">
-              <FormLabel>Start Date</FormLabel>
-              <FormField
-                name="startDate"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <Input
-                      placeholder="Enter the Start Date"
-                      type="date"
-                      {...field}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="space-y-3">
               <FormLabel>Select State</FormLabel>
               <FormField
                 name="state"
@@ -120,9 +127,9 @@ const ProjectForm = ({ open, setOpen }: IProps) => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {["Pending", "Completed", "Planning", "Progress"].map(
-                            (item, idx) => (
-                              <SelectItem value={item} key={idx}>
+                          {Object.values(EStats).map(
+                            (item, key) => (
+                              <SelectItem value={item} key={key}>
                                 {item}
                               </SelectItem>
                             )
@@ -135,17 +142,32 @@ const ProjectForm = ({ open, setOpen }: IProps) => {
                 )}
               />
             </div>
-            <div className="space-y-3">
+            <div className="md:w-sm w-full space-y-3">
               <FormLabel>Start Date</FormLabel>
+              <FormField
+                name="startDate"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <CustomDatePicker
+                      value={field.value as Date}
+                      onChange={field.onChange}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="md:w-sm w-full space-y-3">
+              <FormLabel>End Date</FormLabel>
               <FormField
                 name="endDate"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <Input
-                      placeholder="Enter the End date"
-                      {...field}
-                      type="date"
+                    <CustomDatePicker
+                      value={field.value as Date}
+                      onChange={field.onChange}
                     />
                     <FormMessage />
                   </FormItem>
@@ -157,7 +179,8 @@ const ProjectForm = ({ open, setOpen }: IProps) => {
                 className="cursor-pointer"
                 variant={"default"}
                 type="submit">
-                Create Project
+                {mode === "Create" ? "Create" : "Update"
+                } Project
               </Button>
               <Button
                 className="cursor-pointer"

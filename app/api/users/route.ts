@@ -7,7 +7,6 @@ import bcrypt from "bcrypt";
 export async function POST(req: NextRequest) {
   try {
     const parseUser = await req.json();
-    console.log(parseUser);
     const parsedUserSchema = userSchema.safeParse(parseUser);
     if (!parsedUserSchema.success) {
       return warningMessage("Please fill the all fields...", 400);

@@ -1,13 +1,14 @@
 "use client";
-import { deleteProjectThunk } from "@/app/features/projectSlices";
-import { deleteUserThunk } from "@/app/features/userSlices";
-import { useAppDispatch } from "@/app/hooks/reduxHooks";
+import { deleteProjectThunk, getSingleProjectThunk } from "@/app/features/projectSlices";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
 import { IProject } from "@/app/types/projectTypes";
 import DeleteModel from "@/components/delete-model";
 import { Button } from "@/components/ui/button";
+import { isoDateFormat } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { toast } from "sonner";
+import ProjectForm from "./projectForm";
 
 export const ProjectColumns: ColumnDef<IProject>[] = [
   {
@@ -21,15 +22,30 @@ export const ProjectColumns: ColumnDef<IProject>[] = [
   {
     accessorKey: "startDate",
     header: "Start Date",
+    cell: ({ row }) => {
+      return (
+        <p>{isoDateFormat(row?.original?.startDate)}</p>
+      )
+    }
   },
   {
     accessorKey: "endDate",
     header: "End Date",
+    cell: ({ row }) => {
+      return (
+        <p>{isoDateFormat(row?.original?.endDate)}</p>
+      )
+    }
   },
   {
     header: "Actions",
     cell: ({ row }) => {
+
+      const { project } = useAppSelector((state) => state.projects);
+
       const [open, setOpen] = useState(false);
+      const [projectFormOpen, setProjectFormOpen] = useState(false);
+
       const { id } = row.original;
       const dispatch = useAppDispatch();
 
@@ -44,11 +60,21 @@ export const ProjectColumns: ColumnDef<IProject>[] = [
         }
       };
 
+      const handelFetchData = () => {
+        if (id) {
+          dispatch(getSingleProjectThunk({ id }))
+        }
+        setProjectFormOpen(true)
+      }
       return (
         <div className="space-x-2">
-          <Button type="button" variant={"outline"}>
+          <Button type="button" variant={"outline"} onClick={handelFetchData}>
             Edit
           </Button>
+          {
+            project &&
+            <ProjectForm open={projectFormOpen} setOpen={setProjectFormOpen} mode={"Update"} updateProject={project} />
+          }
           <Button
             type="button"
             variant={"destructive"}

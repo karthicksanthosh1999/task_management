@@ -1,24 +1,25 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ProjectForm from "./_components/projectForm";
 import ProjectHeader from "./_components/ProjectHeader";
 import { DataTable } from "./_components/ProjectDataTable";
 import { ProjectColumns } from "./_components/projectColumns";
-import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
-import { fetchProjectsThunk } from "../features/projectSlices";
+import { useAppSelector } from "../hooks/reduxHooks";
+import ProjectFilterForm from "./_components/ProjectFilterForm";
 
 const page = () => {
+  // STATE SECTION
   const [projectFormOpen, setProjectFormOpen] = useState(false);
+  const [filterFormOpen, setFilterFormOpen] = useState(false)
+
+  // REDUX SECTION
   const { projects, loading } = useAppSelector((state) => state.projects);
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    dispatch(fetchProjectsThunk());
-  }, [dispatch]);
 
   return (
     <>
-      <ProjectHeader setOpen={setProjectFormOpen} />
-      <ProjectForm open={projectFormOpen} setOpen={setProjectFormOpen} />
+      <ProjectHeader setOpen={setProjectFormOpen} setFilterOpen={setFilterFormOpen} />
+      <ProjectFilterForm open={filterFormOpen} setOpen={setFilterFormOpen} />
+      <ProjectForm open={projectFormOpen} setOpen={setProjectFormOpen} mode={"Create"} />
       <DataTable columns={ProjectColumns} data={projects} loading={loading} />
     </>
   );
