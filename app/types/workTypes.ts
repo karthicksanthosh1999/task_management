@@ -14,3 +14,11 @@ export interface IWork {
   project?: IProject;
   user?: IUser;
 }
+
+export interface IWorkFilter {
+  title?: string;
+  state?: Status;
+  projectId?: string;
+  startDate?: Date;
+  endDate?: Date;
+}

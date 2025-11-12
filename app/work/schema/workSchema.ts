@@ -4,8 +4,9 @@ export const workSchema = z.object({
   userId: z.string({ message: "UserId is required" }),
   title: z.string({ message: "Title is required" }),
   projectId: z.string({ message: "Project is required" }),
-  state: z.string({ message: "Status is required" }),
-  startDate: z.string({ message: "Company is required" }),
+  state: z.enum(["Pending", "Completed", "Planning", "Progress"]),
+  startDate: z.coerce.date({ message: "Start Date is required" }),
+  endDate: z.coerce.date({ message: "End Date is required" }),
 });
 
 export type TWorkSchemaType = z.infer<typeof workSchema>;

@@ -11,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { workSchema, TWorkSchemaType } from "../schema/workSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -24,6 +23,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
+import { CustomDatePicker } from "@/components/CustomDatePicker";
+import { createWorkThunk, fetchWorkThunk } from "@/app/features/workSlices";
+import { fetchProjectsThunk } from "@/app/features/projectSlices";
 
 type Props = {
   mode?: "create" | "update";
@@ -32,17 +35,25 @@ type Props = {
 };
 
 const WorkForm = ({ existingWork, mode = "create", setModelOpen }: Props) => {
-  const { data: session } = useSession();
+  const { user } = useAppSelector((state) => state.auth);
+  const { projects: projectList } = useAppSelector((state) => state.projects);
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchProjectsThunk({}));
+  }, [dispatch]);
+
   const projectExtractFunction = () =>
     projectList?.map((item) => ({
-      label: item.name,
+      label: item.title,
       value: item.id,
     }));
 
   const form = useForm({
     resolver: zodResolver(workSchema),
     defaultValues: {
-      userId: session?.user?.id ?? "",
+      userId: user?.id ?? "",
       title: existingWork?.title ?? "",
       projectId: existingWork?.projectId ?? "",
       state: existingWork?.state ?? "",
@@ -54,11 +65,14 @@ const WorkForm = ({ existingWork, mode = "create", setModelOpen }: Props) => {
   useEffect(() => {
     form.reset({
       ...form.getValues(),
-      userId: session?.user?.id,
+      userId: user?.id,
     });
-  }, [form, session]);
+  }, [form, user]);
 
   const onSubmit = (value: TWorkSchemaType) => {
+    if (value) {
+      dispatch(createWorkThunk(value));
+    }
   };
 
   return (
@@ -115,7 +129,7 @@ const WorkForm = ({ existingWork, mode = "create", setModelOpen }: Props) => {
             />
             <FormField
               control={form.control}
-              name="workStatus"
+              name="state"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Select Status:</FormLabel>
@@ -138,20 +152,38 @@ const WorkForm = ({ existingWork, mode = "create", setModelOpen }: Props) => {
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="WorkStart"
-              render={({ field }) => (
-                <DateTimePickerField field={field} label="Work Start" />
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="workEnd"
-              render={({ field }) => (
-                <DateTimePickerField field={field} label="Work End" />
-              )}
-            /> */}
+            <div className="md:w-sm w-full space-y-3">
+              <FormLabel>Start Date</FormLabel>
+              <FormField
+                name="startDate"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <CustomDatePicker
+                      value={field.value as Date}
+                      onChange={field.onChange}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="md:w-sm w-full space-y-3">
+              <FormLabel>End Date</FormLabel>
+              <FormField
+                name="endDate"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <CustomDatePicker
+                      value={field.value as Date}
+                      onChange={field.onChange}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <Button
               variant={"default"}
               type="submit"

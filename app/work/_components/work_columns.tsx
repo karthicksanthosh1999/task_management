@@ -23,13 +23,13 @@ export const WorkColumns: ColumnDef<IWork>[] = [
   {
     accessorKey: "WorkStart",
     header: "Start Date",
-    cell: ({ row }) => <h1>{isoDateFormat(row.original.WorkStart)}</h1>,
+    cell: ({ row }) => <h1>{isoDateFormat(row.original.startDate)}</h1>,
   },
 
   {
     accessorKey: "workEnd",
     header: "End Date",
-    cell: ({ row }) => <h1>{isoDateFormat(row.original.workEnd)}</h1>,
+    cell: ({ row }) => <h1>{isoDateFormat(row.original.endDate)}</h1>,
   },
   {
     accessorKey: "projectId",
