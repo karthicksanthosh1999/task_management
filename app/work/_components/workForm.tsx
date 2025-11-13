@@ -25,20 +25,31 @@ import {
 } from "@/components/ui/select";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
-import { createWorkThunk, fetchWorkThunk } from "@/app/features/workSlices";
+import { createWorkThunk } from "@/app/features/workSlices";
 import { fetchProjectsThunk } from "@/app/features/projectSlices";
+import { DateTimePicker } from "@/components/CustomCalenderWithTime";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 type Props = {
   mode?: "create" | "update";
   existingWork?: TWorkSchemaType;
+  modelOpen: boolean;
   setModelOpen: (open: boolean) => void;
 };
 
-const WorkForm = ({ existingWork, mode = "create", setModelOpen }: Props) => {
+const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
   const { user } = useAppSelector((state) => state.auth);
   const { projects: projectList } = useAppSelector((state) => state.projects);
 
   const dispatch = useAppDispatch();
+
+  console.log(existingWork);
 
   useEffect(() => {
     dispatch(fetchProjectsThunk({}));
@@ -56,7 +67,7 @@ const WorkForm = ({ existingWork, mode = "create", setModelOpen }: Props) => {
       userId: user?.id ?? "",
       title: existingWork?.title ?? "",
       projectId: existingWork?.projectId ?? "",
-      state: existingWork?.state ?? "",
+      state: existingWork?.state ?? "Progress",
       startDate: existingWork?.startDate ?? undefined,
       endDate: existingWork?.endDate ?? undefined,
     },
@@ -72,138 +83,149 @@ const WorkForm = ({ existingWork, mode = "create", setModelOpen }: Props) => {
   const onSubmit = (value: TWorkSchemaType) => {
     if (value) {
       dispatch(createWorkThunk(value));
+      setModelOpen(false);
+      toast.success("Work created successfully...🎉");
     }
   };
 
   return (
     <>
-      <div className="w-full">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-wrap w-full justify-around gap-2 items-end bg-card p-3 rounded-lg">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Work:</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      className="xl:w-xl w-full"
-                      placeholder="Enter the work here..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="projectId"
-              render={({ field }) => (
-                <FormItem className="xl:w-[180px] max-w-full">
-                  <FormLabel>Select Project:</FormLabel>
-                  <FormControl className="xl:w-[180px] w-full">
-                    <Select onValueChange={field.onChange} {...field}>
-                      <SelectTrigger className="">
-                        <SelectValue placeholder="Select a project" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {projectExtractFunction() &&
-                            projectExtractFunction()?.map((item, idx) => (
-                              <SelectItem value={item?.value || ""} key={idx}>
-                                {item.label}
-                              </SelectItem>
-                            ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Status:</FormLabel>
-                  <FormControl className="w-full">
-                    <Select onValueChange={field.onChange} {...field}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="Pending">Pending</SelectItem>
-                          <SelectItem value="Completed">Completed</SelectItem>
-                          <SelectItem value="Progress">Progress</SelectItem>
-                          <SelectItem value="Planning">Planning</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="md:w-sm w-full space-y-3">
-              <FormLabel>Start Date</FormLabel>
+      <Dialog open={modelOpen} onOpenChange={setModelOpen}>
+        <DialogContent>
+          <DialogTitle>Add Work</DialogTitle>
+          <DialogDescription>Add the work here</DialogDescription>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              {/* TITLE */}
               <FormField
-                name="startDate"
                 control={form.control}
+                name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <CustomDatePicker
-                      value={field.value as Date}
-                      onChange={field.onChange}
-                    />
+                    <FormLabel>Title:</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        className="w-full"
+                        placeholder="Enter the work here..."
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-            <div className="md:w-sm w-full space-y-3">
-              <FormLabel>End Date</FormLabel>
+              {/* PROJECT */}
               <FormField
-                name="endDate"
                 control={form.control}
+                name="projectId"
                 render={({ field }) => (
                   <FormItem>
-                    <CustomDatePicker
-                      value={field.value as Date}
-                      onChange={field.onChange}
-                    />
+                    <FormLabel>Select Project:</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange} {...field}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a project" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {projectExtractFunction() &&
+                              projectExtractFunction()?.map((item, idx) => (
+                                <SelectItem value={item?.value || ""} key={idx}>
+                                  {item.label}
+                                </SelectItem>
+                              ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-            <Button
-              variant={"default"}
-              type="submit"
-              className="cursor-pointer">
-              {mode === "update" ? "Update" : "Submit"}
-            </Button>
-            {mode === "create" ? (
-              <Button
-                variant={"destructive"}
-                type="reset"
-                className="cursor-pointer"
-                onClick={() => form.reset()}>
-                Reset
-              </Button>
-            ) : (
-              <></>
-            )}
-          </form>
-        </Form>
-      </div>
+              {/* STATE */}
+              <FormField
+                control={form.control}
+                name="state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Status:</FormLabel>
+                    <FormControl className="w-full">
+                      <Select onValueChange={field.onChange} {...field}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="Pending">Pending</SelectItem>
+                            <SelectItem value="Completed">Completed</SelectItem>
+                            <SelectItem value="Progress">Progress</SelectItem>
+                            <SelectItem value="Planning">Planning</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* START DATE */}
+              <div className=" space-y-3">
+                <FormLabel>Start Date</FormLabel>
+                <FormField
+                  name="startDate"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <CustomDatePicker
+                        value={field.value as Date}
+                        onChange={field.onChange}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              {/* END DATE */}
+              <div className=" space-y-3">
+                <FormLabel>End Date</FormLabel>
+                <FormField
+                  name="endDate"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <CustomDatePicker
+                        value={field.value as Date}
+                        onChange={field.onChange}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="space-x-2">
+                <Button
+                  variant={"default"}
+                  type="submit"
+                  className="cursor-pointer">
+                  {mode === "update" ? "Update" : "Submit"}
+                </Button>
+                {mode === "create" ? (
+                  <Button
+                    variant={"destructive"}
+                    type="reset"
+                    className="cursor-pointer"
+                    onClick={() => form.reset()}>
+                    Close
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

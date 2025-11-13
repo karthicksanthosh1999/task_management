@@ -22,8 +22,23 @@ export async function POST(req: NextRequest) {
         userId,
         state: state,
       },
+      include: { project: true },
     });
     return successMessage(201, work, "Work created successfully");
+  } catch (error) {
+    return errorMessage("Internal Server Error", 500);
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = req.nextUrl;
+    const id = searchParams.get("id") || "";
+
+    const user = await prisma.work.delete({
+      where: { id },
+    });
+    return successMessage(200, user, "Work Deleted Successfully");
   } catch (error) {
     return errorMessage("Internal Server Error", 500);
   }

@@ -14,6 +14,10 @@ import { useState } from "react";
 import DeleteModel from "@/components/delete-model";
 import { TWorkSchemaType } from "../schema/workSchema";
 import WorkUpdateModal from "./workUpdateMode";
+import { useAppDispatch } from "@/app/hooks/reduxHooks";
+import { deleteWorkThunk } from "@/app/features/workSlices";
+import { toast } from "sonner";
+import WorkForm from "./workForm";
 
 export const WorkColumns: ColumnDef<IWork>[] = [
   {
@@ -36,7 +40,7 @@ export const WorkColumns: ColumnDef<IWork>[] = [
     header: "ProjectId",
     cell: ({ row }) => {
       const { project } = row.original;
-      return <p>{project?.name}</p>;
+      return <p>{project?.title}</p>;
     },
   },
   {
@@ -45,13 +49,9 @@ export const WorkColumns: ColumnDef<IWork>[] = [
     cell: ({ row }) => (
       <p
         className={`${cn(
-          row.original?.state === "Planning" ? "bg-blue-400 text-white" : "",
-          row.original?.state === "Completed"
-            ? "bg-green-400 text-gray-800 "
-            : "",
-          row.original?.state === "Progress"
-            ? "bg-orange-400 text-gray-800 "
-            : ""
+          row.original?.state === "Planning" ? "text-blue-400 " : "",
+          row.original?.state === "Completed" ? "text-green-400 " : "",
+          row.original?.state === "Progress" ? "text-orange-400 " : ""
         )} p-2 rounded-lg w-fit text-xs font-medium`}>
         {row.original.state.toUpperCase()}
       </p>
@@ -62,18 +62,24 @@ export const WorkColumns: ColumnDef<IWork>[] = [
     header: "Actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const project = row.original;
+      const work = row.original;
       const [open, setOpen] = useState(false);
       const [formOpen, setFormOpen] = useState(false);
       const [selectedWork, setSelectedWork] = useState<
         TWorkSchemaType | undefined
       >(undefined);
 
+      const dispatch = useAppDispatch();
       const handleEdit = (value: TWorkSchemaType) => {
         setSelectedWork(value);
         setFormOpen(true);
       };
 
+      const handleDelete = (id: string) => {
+        dispatch(deleteWorkThunk({ workId: id }));
+        toast.success("Work deleted successfully...🗑️");
+        setOpen(false);
+      };
       return (
         <>
           <DropdownMenu>
@@ -87,24 +93,24 @@ export const WorkColumns: ColumnDef<IWork>[] = [
               <DropdownMenuItem onClick={() => setOpen(true)}>
                 Delete
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleEdit(project)}>
+              <DropdownMenuItem onClick={() => handleEdit(work)}>
                 Update
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <DeleteModel
             open={open}
-            selectedId={project?.id ?? ""}
+            confirmDelete={handleDelete}
+            deleteId={work?.id ?? ""}
             setOpen={setOpen}
-            title="Work"
-            mutationId="work"
-            toastId="delete-work"
-            apiUrl="/api/works"
+            title="Delete Work"
+            description="Are you sure, You want to delete the work?"
           />
-          <WorkUpdateModal
-            open={formOpen}
-            onOpenChange={setFormOpen}
-            selectedWork={selectedWork}
+          <WorkForm
+            modelOpen={formOpen}
+            setModelOpen={setFormOpen}
+            existingWork={selectedWork}
+            mode="update"
           />
         </>
       );

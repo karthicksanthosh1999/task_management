@@ -53,7 +53,7 @@ export const fetchWorkThunk = createAsyncThunk<
       });
 
       const response = await axios.get<IResponseType<IWork[]>>(
-        `/api/works/filters?${params.toString()}`
+        `/api/work/filter?${params.toString()}`
       );
       return response.data?.data ?? [];
     } catch (error) {
