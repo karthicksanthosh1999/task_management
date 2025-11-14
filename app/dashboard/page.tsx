@@ -1,3 +1,17 @@
+
+import { SectionCards } from "@/components/section-cards";
+import ProjectsStatusCard from "./_components/ProjectsStatusCard";
+
 export default function Page() {
-  return <h1>Welcome to the dashboard</h1>;
+  return (
+    <>
+      <div>
+        <SectionCards />
+      </div>
+      <div className="p-6">
+        <ProjectsStatusCard />
+      </div>
+
+    </>
+  )
 }

@@ -25,6 +25,8 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Filter } from "lucide-react";
+import WorkExport from "./work_exprot";
 
 interface DataTableProps<IWork, TValue> {
     columns: ColumnDef<IWork, TValue>[];
@@ -40,6 +42,7 @@ export function WorkDataTable<TData, TValue>({
 
 
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    const [filterModelOpen, setFilterModelOpen] = useState<boolean>(false)
 
     const table = useReactTable({
         data,
@@ -56,35 +59,42 @@ export function WorkDataTable<TData, TValue>({
 
     return (
         <>
-            <header className="py-3">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            Columns
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter(
-                                (column) => column.getCanHide()
-                            )
-                            .map((column) => {
-                                return (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value) =>
-                                            column.toggleVisibility(!!value)
-                                        }
-                                    >
-                                        {column.id}
-                                    </DropdownMenuCheckboxItem>
+            <header className="py-3 flex items-center justify-end gap-2">
+                <div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto">
+                                Columns
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter(
+                                    (column) => column.getCanHide()
                                 )
-                            })}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                                .map((column) => {
+                                    return (
+                                        <DropdownMenuCheckboxItem
+                                            key={column.id}
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value) =>
+                                                column.toggleVisibility(!!value)
+                                            }
+                                        >
+                                            {column.id}
+                                        </DropdownMenuCheckboxItem>
+                                    )
+                                })}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+                <div>
+                    <Button variant="outline" type="button" className="ml-auto cursor-pointer" onClick={() => setFilterModelOpen(true)}>
+                        <Filter />
+                    </Button>
+                </div>
             </header>
             <div className="overflow-hidden rounded-md border">
                 <Table>
@@ -158,6 +168,7 @@ export function WorkDataTable<TData, TValue>({
                     Next
                 </Button>
             </div>
+            <WorkExport open={filterModelOpen} setOpen={setFilterModelOpen} mode="Filter" />
         </>
     )
 }

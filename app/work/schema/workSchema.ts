@@ -10,3 +10,13 @@ export const workSchema = z.object({
 });
 
 export type TWorkSchemaType = z.infer<typeof workSchema>;
+
+
+export const workExportValidationSchema = z.object({
+  projectId: z.string().optional(),
+  state: z.enum(["Pending", "Completed", "Planning", "Progress"]).optional(),
+  startDate: z.coerce.date({ message: "Start Date is required" }),
+  endDate: z.coerce.date({ message: "End Date is required" }),
+})
+
+export type TWorkExportValidationSchema = z.infer<typeof workExportValidationSchema>

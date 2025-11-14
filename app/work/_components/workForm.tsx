@@ -14,7 +14,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-// import { DateTimePickerField } from "@/components/DateAndTimePickerField";
 import {
   Select,
   SelectContent,
@@ -27,7 +26,6 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { createWorkThunk } from "@/app/features/workSlices";
 import { fetchProjectsThunk } from "@/app/features/projectSlices";
-import { DateTimePicker } from "@/components/CustomCalenderWithTime";
 import {
   Dialog,
   DialogContent,
@@ -48,8 +46,6 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
   const { projects: projectList } = useAppSelector((state) => state.projects);
 
   const dispatch = useAppDispatch();
-
-  console.log(existingWork);
 
   useEffect(() => {
     dispatch(fetchProjectsThunk({}));
@@ -87,6 +83,11 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
       toast.success("Work created successfully...🎉");
     }
   };
+
+  const handleClose = () => {
+    form.reset()
+    setModelOpen(false)
+  }
 
   return (
     <>
@@ -210,17 +211,15 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
                   className="cursor-pointer">
                   {mode === "update" ? "Update" : "Submit"}
                 </Button>
-                {mode === "create" ? (
-                  <Button
-                    variant={"destructive"}
-                    type="reset"
-                    className="cursor-pointer"
-                    onClick={() => form.reset()}>
-                    Close
-                  </Button>
-                ) : (
-                  <></>
-                )}
+
+                <Button
+                  variant={"destructive"}
+                  type="reset"
+                  className="cursor-pointer"
+                  onClick={handleClose}>
+                  Close
+                </Button>
+
               </div>
             </form>
           </Form>

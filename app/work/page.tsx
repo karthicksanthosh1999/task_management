@@ -12,9 +12,10 @@ const page = () => {
   const { works, loading } = useAppSelector((state) => state.works);
   const dispatch = useAppDispatch();
 
+
   useEffect(() => {
     dispatch(fetchWorkThunk({}));
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>
