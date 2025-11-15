@@ -13,7 +13,6 @@ import { cn, isoDateFormat } from "@/lib/utils";
 import { useState } from "react";
 import DeleteModel from "@/components/delete-model";
 import { TWorkSchemaType } from "../schema/workSchema";
-import WorkUpdateModal from "./workUpdateMode";
 import { useAppDispatch } from "@/app/hooks/reduxHooks";
 import { deleteWorkThunk } from "@/app/features/workSlices";
 import { toast } from "sonner";

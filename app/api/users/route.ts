@@ -4,7 +4,7 @@ import {
 } from "@/app/users/schema/userSchema";
 import { errorMessage, successMessage, warningMessage } from "@/lib/apiHandler";
 import prisma from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 
 export async function POST(req: NextRequest) {
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   try {
     const { searchParams } = await req.nextUrl;
     const search = searchParams.get("search") || "";

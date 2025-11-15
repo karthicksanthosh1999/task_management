@@ -37,12 +37,13 @@ import {
 } from "@/app/features/projectSlices";
 import { toast } from "sonner";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
+import { IProject } from "@/app/types/projectTypes";
 
 interface IProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   mode: "Create" | "Update";
-  updateProject?: TProjectValidationSchema;
+  updateProject?: IProject;
 }
 
 const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
@@ -76,7 +77,7 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
     }
   }, [updateProject, user, form]);
 
-  const handleOnSubmit = async (values: TProjectValidationSchema) => {
+  const handleOnSubmit = async (values: IProject) => {
     if (mode === "Create") {
       dispatch(createProjectThunk(values));
       toast.success("Project Created Successfully...🎉");

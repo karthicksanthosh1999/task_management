@@ -1,5 +1,8 @@
 "use client";
-import { deleteProjectThunk, getSingleProjectThunk } from "@/app/features/projectSlices";
+import {
+  deleteProjectThunk,
+  getSingleProjectThunk,
+} from "@/app/features/projectSlices";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
 import { IProject } from "@/app/types/projectTypes";
 import DeleteModel from "@/components/delete-model";
@@ -23,24 +26,19 @@ export const ProjectColumns: ColumnDef<IProject>[] = [
     accessorKey: "startDate",
     header: "Start Date",
     cell: ({ row }) => {
-      return (
-        <p>{isoDateFormat(row?.original?.startDate)}</p>
-      )
-    }
+      return <p>{isoDateFormat(row?.original?.startDate)}</p>;
+    },
   },
   {
     accessorKey: "endDate",
     header: "End Date",
     cell: ({ row }) => {
-      return (
-        <p>{isoDateFormat(row?.original?.endDate)}</p>
-      )
-    }
+      return <p>{isoDateFormat(row?.original?.endDate)}</p>;
+    },
   },
   {
     header: "Actions",
     cell: ({ row }) => {
-
       const { project } = useAppSelector((state) => state.projects);
 
       const [open, setOpen] = useState(false);
@@ -52,7 +50,8 @@ export const ProjectColumns: ColumnDef<IProject>[] = [
       const handleDelete = async () => {
         try {
           if (id) {
-            await dispatch(deleteProjectThunk({ userId: id })).unwrap();
+            console.log({ id });
+            await dispatch(deleteProjectThunk({ id })).unwrap();
             toast.success("Project Deleted Successfully...👍");
           }
         } catch (error) {
@@ -62,19 +61,23 @@ export const ProjectColumns: ColumnDef<IProject>[] = [
 
       const handelFetchData = () => {
         if (id) {
-          dispatch(getSingleProjectThunk({ id }))
+          dispatch(getSingleProjectThunk({ id }));
         }
-        setProjectFormOpen(true)
-      }
+        setProjectFormOpen(true);
+      };
       return (
         <div className="space-x-2">
           <Button type="button" variant={"outline"} onClick={handelFetchData}>
             Edit
           </Button>
-          {
-            project &&
-            <ProjectForm open={projectFormOpen} setOpen={setProjectFormOpen} mode={"Update"} updateProject={project} />
-          }
+          {project && (
+            <ProjectForm
+              open={projectFormOpen}
+              setOpen={setProjectFormOpen}
+              mode={"Update"}
+              updateProject={project}
+            />
+          )}
           <Button
             type="button"
             variant={"destructive"}

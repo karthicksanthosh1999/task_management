@@ -56,7 +56,7 @@ export const logOutUserThunk = createAsyncThunk(
   "user/logOutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await axios.post("/api/auth/logout");
+      await axios.get("/api/auth/logout");
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }

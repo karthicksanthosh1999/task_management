@@ -24,13 +24,13 @@ import {
 } from "@/components/ui/sidebar";
 import { redirect } from "next/navigation";
 import { IUser } from "@/app/types/userTypes";
-import { useDispatch } from "react-redux";
 import { logOutUserThunk } from "@/app/features/authSlices";
+import { useAppDispatch } from "@/app/hooks/reduxHooks";
 
 export function NavUser({ user }: { user: IUser }) {
   const { isMobile } = useSidebar();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleLogout = () => {
     dispatch(logOutUserThunk());

@@ -1,27 +1,20 @@
 import { IUser } from "@/app/types/userTypes";
+import { Status } from "@/lib/generated/prisma/enums";
 
 export interface IProject {
   id?: string;
   userId?: string;
   title: string;
-  state: EStats;
+  state: Status;
   startDate: Date;
   endDate: Date;
-
   User?: IUser;
-}
-
-export enum EStats {
-  Pending,
-  Completed,
-  Planning,
-  Progress,
 }
 
 export interface TProjectFilter {
   userId?: string;
   search?: string;
-  state?: EStats;
+  state?: Status;
   startDate?: Date;
   endDate?: Date;
 }

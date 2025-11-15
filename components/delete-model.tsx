@@ -13,11 +13,19 @@ interface IProps {
   setOpen: (open: boolean) => void;
   confirmDelete: (id: string) => void;
   deleteId: string;
-  title: string,
-  description: string
+  title: string;
+  description: string;
 }
 
-const DeleteModel = ({ open, setOpen, confirmDelete, deleteId, description, title }: IProps) => {
+const DeleteModel = ({
+  open,
+  setOpen,
+  confirmDelete,
+  deleteId,
+  description,
+  title,
+}: IProps) => {
+  console.log({ deleteId });
 
   const handleClose = () => {
     setOpen(false);
@@ -29,8 +37,18 @@ const DeleteModel = ({ open, setOpen, confirmDelete, deleteId, description, titl
         <DialogTitle>{title ?? "Unknown"}</DialogTitle>
         <DialogDescription>{description ?? "N/A"}</DialogDescription>
         <DialogFooter>
-          <Button className="cursor-pointer" variant={'outline'} type="button" onClick={() => setOpen(false)}>Close</Button>
-          <Button className="cursor-pointer" variant={'destructive'} type="button" onClick={() => confirmDelete(deleteId)}>
+          <Button
+            className="cursor-pointer"
+            variant={"outline"}
+            type="button"
+            onClick={() => setOpen(false)}>
+            Close
+          </Button>
+          <Button
+            className="cursor-pointer"
+            variant={"destructive"}
+            type="button"
+            onClick={() => confirmDelete(deleteId)}>
             Confirm
           </Button>
         </DialogFooter>

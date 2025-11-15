@@ -127,7 +127,6 @@ const ProjectsStatusCard = () => {
               {completedTaskMonthlyCount && (
                 <BarChart
                   categories={completedTaskMonthlyCount.categories}
-                  title=""
                   data={completedTaskMonthlyCount.series}
                 />
               )}
