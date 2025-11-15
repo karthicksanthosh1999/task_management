@@ -16,57 +16,65 @@ const initialState: IInitialState = {
 };
 
 // ✅ FETCH USERS
-export const fetchUsersThunk = createAsyncThunk<IUser[], void, { rejectValue: string }>(
-  "users/fetchUsers",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axios.get<IResponseType<IUser[]>>(`/api/users`);
-      return response.data.data ?? [];
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to fetch users");
-    }
+export const fetchUsersThunk = createAsyncThunk<
+  IUser[],
+  void,
+  { rejectValue: string }
+>("users/fetchUsers", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axios.get<IResponseType<IUser[]>>(`/api/users`);
+    return response.data.data ?? [];
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to fetch users");
   }
-);
+});
 
 // ✅ ADD USER
-export const addUserThunk = createAsyncThunk<IUser, IUser, { rejectValue: string }>(
-  "users/addUser",
-  async (user, { rejectWithValue }) => {
-    try {
-      const response = await axios.post<IResponseType<IUser>>(`/api/users`, user);
-      return response.data.data!;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to create user");
-    }
+export const addUserThunk = createAsyncThunk<
+  IUser,
+  IUser,
+  { rejectValue: string }
+>("users/addUser", async (user, { rejectWithValue }) => {
+  try {
+    const response = await axios.post<IResponseType<IUser>>(`/api/users`, user);
+    return response.data.data!;
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to create user");
   }
-);
+});
 
 // ✅ UPDATE USER
-export const updateUserThunk = createAsyncThunk<IUser, IUser, { rejectValue: string }>(
-  "users/updateUser",
-  async (user, { rejectWithValue }) => {
-    try {
-      const response = await axios.put<IResponseType<IUser>>(`/api/users/${user.id}`, user);
-      return response.data.data!;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to update user");
-    }
+export const updateUserThunk = createAsyncThunk<
+  IUser,
+  IUser,
+  { rejectValue: string }
+>("users/updateUser", async (user, { rejectWithValue }) => {
+  try {
+    const response = await axios.put<IResponseType<IUser>>(
+      `/api/users/?id=${user.id}`,
+      user
+    );
+    return response.data.data!;
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to update user");
   }
-);
+});
 
 // ✅ DELETE USER
-export const deleteUserThunk = createAsyncThunk<IUser, string, { rejectValue: string }>(
-  "users/deleteUser",
-  async (userId, { rejectWithValue }) => {
-    try {
-      const response = await axios.delete<IResponseType<IUser>>(`/api/users/?id=${userId}`);
-      return response.data.data!;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to delete user");
-    }
+export const deleteUserThunk = createAsyncThunk<
+  IUser,
+  string,
+  { rejectValue: string }
+>("users/deleteUser", async (userId, { rejectWithValue }) => {
+  try {
+    const response = await axios.delete<IResponseType<IUser>>(
+      `/api/users/?id=${userId}`
+    );
+    return response.data.data!;
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to delete user");
   }
-);
-
+});
 
 // ✅ SLICE
 const userSlice = createSlice({

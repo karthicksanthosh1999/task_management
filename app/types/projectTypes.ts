@@ -18,7 +18,6 @@ export enum EStats {
   Progress,
 }
 
-
 export interface TProjectFilter {
   userId?: string;
   search?: string;

@@ -102,7 +102,7 @@ export const updateWorkThunk = createAsyncThunk<
   { rejectValue: string }
 >("work/updateWork", async ({ work, workId }, { rejectWithValue }) => {
   try {
-    const response = await axios.put(`/api/work?${workId}`, work);
+    const response = await axios.put(`/api/work?id=${workId}`, work);
     return response.data?.data!;
   } catch (error) {
     return rejectWithValue(

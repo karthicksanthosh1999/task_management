@@ -8,7 +8,10 @@ import {
 } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { projectValidationSchema } from "../schema/projectSchema";
+import {
+  projectValidationSchema,
+  TProjectValidationSchema,
+} from "../schema/projectSchema";
 import {
   Form,
   FormField,
@@ -26,18 +29,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { EStats, IProject } from "@/app/types/projectTypes";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
 import { useEffect } from "react";
-import { createProjectThunk, updateProjectThunk } from "@/app/features/projectSlices";
+import {
+  createProjectThunk,
+  updateProjectThunk,
+} from "@/app/features/projectSlices";
 import { toast } from "sonner";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 
 interface IProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  mode: "Create" | "Update",
-  updateProject?: IProject
+  mode: "Create" | "Update";
+  updateProject?: TProjectValidationSchema;
 }
 
 const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
@@ -47,6 +52,7 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
   const form = useForm({
     resolver: zodResolver(projectValidationSchema),
   });
+
   useEffect(() => {
     form.reset({
       ...form.getValues(),
@@ -59,21 +65,26 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
       form.reset({
         title: updateProject.title ?? "",
         state: updateProject.state ?? "Completed",
-        startDate: updateProject.startDate ? new Date(updateProject.startDate) : new Date(),
-        endDate: updateProject.endDate ? new Date(updateProject.endDate) : new Date(),
+        startDate: updateProject.startDate
+          ? new Date(updateProject.startDate)
+          : new Date(),
+        endDate: updateProject.endDate
+          ? new Date(updateProject.endDate)
+          : new Date(),
         userId: user?.id ?? "",
       });
     }
   }, [updateProject, user, form]);
 
-
-  const handleOnSubmit = async (values: IProject) => {
+  const handleOnSubmit = async (values: TProjectValidationSchema) => {
     if (mode === "Create") {
       dispatch(createProjectThunk(values));
       toast.success("Project Created Successfully...🎉");
     } else {
       if (updateProject?.id && values) {
-        dispatch(updateProjectThunk({ project: values, id: updateProject?.id }));
+        dispatch(
+          updateProjectThunk({ project: values, id: updateProject?.id })
+        );
         toast.success("Project Updated Successfully...🎉");
       }
     }
@@ -127,13 +138,10 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {Object.values(EStats).map(
-                            (item, key) => (
-                              <SelectItem value={item} key={key}>
-                                {item}
-                              </SelectItem>
-                            )
-                          )}
+                          <SelectItem value="Pending">Pending</SelectItem>
+                          <SelectItem value="Completed">Completed</SelectItem>
+                          <SelectItem value="Progress">Progress</SelectItem>
+                          <SelectItem value="Planning">Planning</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -179,8 +187,7 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
                 className="cursor-pointer"
                 variant={"default"}
                 type="submit">
-                {mode === "Create" ? "Create" : "Update"
-                } Project
+                {mode === "Create" ? "Create" : "Update"} Project
               </Button>
               <Button
                 className="cursor-pointer"

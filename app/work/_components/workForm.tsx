@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
-import { createWorkThunk } from "@/app/features/workSlices";
+import { createWorkThunk, updateWorkThunk } from "@/app/features/workSlices";
 import { fetchProjectsThunk } from "@/app/features/projectSlices";
 import {
   Dialog,
@@ -51,6 +51,23 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
     dispatch(fetchProjectsThunk({}));
   }, [dispatch]);
 
+  useEffect(() => {
+    if (existingWork) {
+      form.reset({
+        title: existingWork.title ?? "",
+        state: existingWork.state ?? "Progress",
+        startDate: existingWork.startDate
+          ? new Date(existingWork?.startDate)
+          : new Date(),
+        endDate: existingWork.endDate
+          ? new Date(existingWork.endDate)
+          : new Date(),
+        projectId: existingWork.projectId ?? "",
+        userId: user?.id ?? "",
+      });
+    }
+  }, [existingWork, user]);
+
   const projectExtractFunction = () =>
     projectList?.map((item) => ({
       label: item.title,
@@ -59,14 +76,6 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
 
   const form = useForm({
     resolver: zodResolver(workSchema),
-    defaultValues: {
-      userId: user?.id ?? "",
-      title: existingWork?.title ?? "",
-      projectId: existingWork?.projectId ?? "",
-      state: existingWork?.state ?? "Progress",
-      startDate: existingWork?.startDate ?? undefined,
-      endDate: existingWork?.endDate ?? undefined,
-    },
   });
 
   useEffect(() => {
@@ -76,18 +85,22 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
     });
   }, [form, user]);
 
-  const onSubmit = (value: TWorkSchemaType) => {
-    if (value) {
-      dispatch(createWorkThunk(value));
-      setModelOpen(false);
-      toast.success("Work created successfully...🎉");
-    }
+  const handleClose = () => {
+    form.reset();
+    setModelOpen(false);
   };
 
-  const handleClose = () => {
-    form.reset()
-    setModelOpen(false)
-  }
+  const onSubmit = (value: TWorkSchemaType) => {
+    if (mode === "create") {
+      dispatch(createWorkThunk(value));
+      handleClose();
+      toast.success("Work created successfully...🎉");
+    } else if (existingWork?.id && value) {
+      dispatch(updateWorkThunk({ work: value, workId: existingWork?.id }));
+      handleClose();
+      toast.success("Work update successfully...🎉");
+    }
+  };
 
   return (
     <>
@@ -219,7 +232,6 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
                   onClick={handleClose}>
                   Close
                 </Button>
-
               </div>
             </form>
           </Form>

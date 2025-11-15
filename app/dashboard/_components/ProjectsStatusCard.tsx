@@ -69,7 +69,7 @@ const ProjectsStatusCard = () => {
         let data = res.data?.data;
         console.log(data);
         const dates = data.map((d: IChartStatus) =>
-          isoDateFormatForChart(d.day)
+          isoDateFormatForChart(new Date(d.day))
         );
         setCategories(dates);
 
@@ -88,28 +88,32 @@ const ProjectsStatusCard = () => {
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-3">
-        <div className="w-full">
-          <Card className="w-fit h-[450px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Project Status */}
+        <div>
+          <Card className="h-[450px]">
             <CardContent>
               <CardHeader>
                 <CardTitle>Project Status</CardTitle>
                 <CardDescription>Projects status card</CardDescription>
               </CardHeader>
               <Separator className="my-2" />
+
               {projectStatusDonutChart && (
                 <SkeletonWrapper isLoading={loading}>
                   <DonutChart
-                    labels={projectStatusDonutChart?.labels}
-                    series={projectStatusDonutChart?.series}
+                    labels={projectStatusDonutChart.labels}
+                    series={projectStatusDonutChart.series}
                   />
                 </SkeletonWrapper>
               )}
             </CardContent>
           </Card>
         </div>
-        <div className="w-full">
-          <Card className="w-fit h-[450px]">
+
+        {/* Completed Tasks (Bar Chart) */}
+        <div>
+          <Card className="h-[450px]">
             <CardContent>
               <CardHeader>
                 <CardTitle>Completed Tasks</CardTitle>
@@ -117,19 +121,23 @@ const ProjectsStatusCard = () => {
                   Completed tasks monthly wise card
                 </CardDescription>
               </CardHeader>
+
               <Separator className="my-2" />
+
               {completedTaskMonthlyCount && (
                 <BarChart
-                  categories={completedTaskMonthlyCount?.categories}
+                  categories={completedTaskMonthlyCount.categories}
                   title=""
-                  data={completedTaskMonthlyCount?.series}
+                  data={completedTaskMonthlyCount.series}
                 />
               )}
             </CardContent>
           </Card>
         </div>
-        <div className="w-full col-span-2">
-          <Card className="w-full h-[450px]">
+
+        {/* Work Status Line Chart (big one) */}
+        <div className="lg:col-span-2 col-span-1">
+          <Card className="h-[450px]">
             <CardContent>
               <CardHeader>
                 <CardTitle>Completed Tasks</CardTitle>
@@ -137,7 +145,9 @@ const ProjectsStatusCard = () => {
                   Completed tasks monthly wise card
                 </CardDescription>
               </CardHeader>
+
               <Separator className="my-2" />
+
               {series && categories && (
                 <WorkStatusLineChart categories={categories} series={series} />
               )}

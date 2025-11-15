@@ -13,8 +13,8 @@ type TProps = {
 };
 
 const UserAuthProvider = ({ children }: TProps) => {
-  const { user, loading } = useAppSelector(state => state.auth)
-  const dispatch = useAppDispatch()
+  const { user, loading } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchLoginUser());
@@ -25,23 +25,25 @@ const UserAuthProvider = ({ children }: TProps) => {
   }
 
   if (loading) {
-    return <GlobalLoading />
+    return <GlobalLoading />;
   }
-  return <div>
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }>
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="p-3">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
-  </div>;
+  return (
+    <div>
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "calc(var(--spacing) * 72)",
+            "--header-height": "calc(var(--spacing) * 12)",
+          } as React.CSSProperties
+        }>
+        <AppSidebar variant="inset" />
+        <SidebarInset>
+          <SiteHeader />
+          <div className="p-3">{children}</div>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
+  );
 };
 
 export default UserAuthProvider;

@@ -1,8 +1,7 @@
-'use client';
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -23,11 +22,10 @@ import { IUser } from "../types/userTypes";
 import { updateUserThunk } from "../features/userSlices";
 
 const page = () => {
+  const [isEdit, setIsEdit] = useState(false);
 
-  const [isEdit, setIsEdit] = useState(false)
-
-  const { user } = useAppSelector(state => state.auth);
-  const dispatch = useAppDispatch()
+  const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
   const form = useForm({
     resolver: zodResolver(userSchema),
@@ -36,9 +34,8 @@ const page = () => {
       email: "",
       company: "",
       mobile: "",
-    }
-  })
-  console.log(user)
+    },
+  });
   useEffect(() => {
     if (user) {
       form.reset({
@@ -49,15 +46,18 @@ const page = () => {
       });
     }
   }, [user, form]);
+
   const handleOnSubmit = (value: IUser) => {
-    dispatch(updateUserThunk(value))
-  }
+    dispatch(updateUserThunk(value));
+  };
 
   return (
     <div>
       <Card>
         <Form {...form}>
-          <form className="space-y-3" onSubmit={form.handleSubmit(handleOnSubmit)}>
+          <form
+            className="space-y-3"
+            onSubmit={form.handleSubmit(handleOnSubmit)}>
             <CardHeader>
               <CardTitle> {isEdit && "Edit "}User Profile</CardTitle>
               <CardDescription>Here edit your profile here...</CardDescription>
@@ -73,7 +73,11 @@ const page = () => {
                       control={form.control}
                       render={({ field }) => (
                         <FormItem>
-                          <Input disabled={isEdit ? false : true} placeholder="Enter user name" {...field} />
+                          <Input
+                            disabled={isEdit ? false : true}
+                            placeholder="Enter user name"
+                            {...field}
+                          />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -86,7 +90,12 @@ const page = () => {
                       control={form.control}
                       render={({ field }) => (
                         <FormItem>
-                          <Input disabled={isEdit ? false : true} placeholder="Enter email" {...field} type="email" />
+                          <Input
+                            disabled={isEdit ? false : true}
+                            placeholder="Enter email"
+                            {...field}
+                            type="email"
+                          />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -101,7 +110,8 @@ const page = () => {
                       control={form.control}
                       render={({ field }) => (
                         <FormItem>
-                          <Input disabled={isEdit ? false : true}
+                          <Input
+                            disabled={isEdit ? false : true}
                             placeholder="Enter phone number"
                             {...field}
                             type="tel"
@@ -118,7 +128,12 @@ const page = () => {
                       control={form.control}
                       render={({ field }) => (
                         <FormItem>
-                          <Input disabled={isEdit ? false : true} placeholder="Enter company name" {...field} type="text" />
+                          <Input
+                            disabled={isEdit ? false : true}
+                            placeholder="Enter company name"
+                            {...field}
+                            type="text"
+                          />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -129,34 +144,31 @@ const page = () => {
             </CardContent>
             <Separator />
             <CardFooter>
-              <CardAction className="space-x-2">
+              {/* <CardAction className="space-x-2"> */}
+              <Button
+                variant={"outline"}
+                className="cursor-pointer"
+                type="button"
+                onClick={() => setIsEdit((pre) => !pre)}>
+                {isEdit ? (
+                  <>
+                    <X /> Cancel
+                  </>
+                ) : (
+                  <>
+                    <Edit /> Edit
+                  </>
+                )}
+              </Button>
+              {isEdit && (
                 <Button
-                  variant={"outline"}
+                  variant={"destructive"}
                   className="cursor-pointer"
-                  type="button"
-                  onClick={() => setIsEdit((pre) => !pre)}
-                >
-                  {isEdit ? (
-                    <>
-                      <X /> Cancel
-                    </>
-                  ) : (
-                    <>
-                      <Edit /> Edit
-                    </>
-                  )}
+                  type="submit">
+                  <Upload /> Submit
                 </Button>
-                {
-                  isEdit && (
-                    <Button
-                      variant={"destructive"}
-                      className="cursor-pointer"
-                      type="button">
-                      <Upload /> Submit
-                    </Button>
-                  )
-                }
-              </CardAction>
+              )}
+              {/* </CardAction> */}
             </CardFooter>
           </form>
         </Form>

@@ -5,7 +5,7 @@ import { IResponseType } from "../types/reponseType";
 
 interface IInitialState {
   projects: IProject[];
-  project: IProject | null
+  project: IProject | null;
   loading: boolean;
   error: string | null;
 }
@@ -14,32 +14,38 @@ const initialState: IInitialState = {
   error: null,
   loading: false,
   projects: [],
-  project: null
+  project: null,
 };
 
 export const fetchProjectsThunk = createAsyncThunk<
   IProject[],
   TProjectFilter,
   { rejectValue: string }
->("project/fetch", async ({ search = "", state = "", startDate, endDate }, { rejectWithValue }) => {
-  try {
-    const params = new URLSearchParams({
-      search,
-      state: String(state ?? ""),
-      startDate: startDate ? startDate.toISOString() : "",
-      endDate: endDate ? endDate.toISOString() : "",
-    });
+>(
+  "project/fetch",
+  async (
+    { search = "", state = "", startDate, endDate },
+    { rejectWithValue }
+  ) => {
+    try {
+      const params = new URLSearchParams({
+        search,
+        state: String(state ?? ""),
+        startDate: startDate ? startDate.toISOString() : "",
+        endDate: endDate ? endDate.toISOString() : "",
+      });
 
-    const response = await axios.get<IResponseType<IProject[]>>(
-      `/api/projects/filter?${params.toString()}`
-    );
-    return response.data.data ?? [];
-  } catch (error) {
-    return rejectWithValue(
-      error instanceof Error ? error.message : String(error)
-    );
+      const response = await axios.get<IResponseType<IProject[]>>(
+        `/api/projects/filter?${params.toString()}`
+      );
+      return response.data.data ?? [];
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : String(error)
+      );
+    }
   }
-});
+);
 
 export const createProjectThunk = createAsyncThunk<
   IProject,
@@ -47,7 +53,10 @@ export const createProjectThunk = createAsyncThunk<
   { rejectValue: string }
 >("project/create", async (project, { rejectWithValue }) => {
   try {
-    const response = await axios.post<IResponseType<IProject>>("/api/projects", project);
+    const response = await axios.post<IResponseType<IProject>>(
+      "/api/projects",
+      project
+    );
     return response.data.data!;
   } catch (error) {
     return rejectWithValue(
@@ -62,7 +71,10 @@ export const updateProjectThunk = createAsyncThunk<
   { rejectValue: string }
 >("project/update", async ({ id, project }, { rejectWithValue }) => {
   try {
-    const response = await axios.put<IResponseType<IProject>>(`/api/projects?id=${id}`, project);
+    const response = await axios.put<IResponseType<IProject>>(
+      `/api/projects?id=${id}`,
+      project
+    );
     return response.data?.data!;
   } catch (error) {
     return rejectWithValue(
@@ -77,7 +89,9 @@ export const deleteProjectThunk = createAsyncThunk<
   { rejectValue: string }
 >("project/delete", async ({ id }, { rejectWithValue }) => {
   try {
-    const response = await axios.delete<IResponseType<IProject>>(`/api/projects?id=${id}`);
+    const response = await axios.delete<IResponseType<IProject>>(
+      `/api/projects?id=${id}`
+    );
     return response.data?.data!;
   } catch (error) {
     return rejectWithValue(
@@ -92,14 +106,16 @@ export const getSingleProjectThunk = createAsyncThunk<
   { rejectValue: string }
 >("project/singleProject", async ({ id }, { rejectWithValue }) => {
   try {
-    const response = await axios.get<IResponseType<IProject>>(`/api/projects?id=${id}`);
+    const response = await axios.get<IResponseType<IProject>>(
+      `/api/projects?id=${id}`
+    );
     return response.data?.data!;
   } catch (error) {
     return rejectWithValue(
       error instanceof Error ? error.message : String(error)
     );
   }
-})
+});
 
 export const projectSlices = createSlice({
   name: "projects",
@@ -130,7 +146,9 @@ export const projectSlices = createSlice({
 
     builder
       .addCase(deleteProjectThunk.fulfilled, (state, action) => {
-        state.projects = state.projects.filter((u) => u.id !== action.payload.id);
+        state.projects = state.projects.filter(
+          (u) => u.id !== action.payload.id
+        );
       })
       .addCase(deleteProjectThunk.rejected, (state, action) => {
         state.error = action.payload ?? "Failed to delete project";
@@ -146,7 +164,9 @@ export const projectSlices = createSlice({
       })
 
       .addCase(updateProjectThunk.fulfilled, (state, action) => {
-        const index = state.projects.findIndex((p) => p.id === action.payload.id);
+        const index = state.projects.findIndex(
+          (p) => p.id === action.payload.id
+        );
         if (index !== -1) {
           state.projects[index] = action.payload; // replace updated project
         }

@@ -43,3 +43,41 @@ export async function DELETE(req: NextRequest) {
     return errorMessage("Internal Server Error", 500);
   }
 }
+
+export async function PUT(req: NextRequest) {
+  try {
+    const { searchParams } = req.nextUrl;
+    const bodyParsed = await req.json();
+
+    const id = searchParams.get("id") || "";
+
+    if (!id) {
+      return warningMessage("Invalid work id", 400);
+    }
+
+    const parsedWork = workSchema.safeParse(bodyParsed);
+
+    if (!parsedWork.success) {
+      return warningMessage("Please fill the all fields");
+    }
+    console.log(id, parsedWork.data);
+    const { endDate, projectId, startDate, state, title, userId } =
+      parsedWork.data;
+
+    const work = await prisma.work.update({
+      where: { id },
+      data: {
+        userId,
+        endDate,
+        projectId,
+        startDate,
+        state,
+        title,
+      },
+      include: { project: true },
+    });
+    return successMessage(201, work, "Work updated successfully");
+  } catch (error) {
+    return errorMessage("Internal Server error", 500, String(error));
+  }
+}

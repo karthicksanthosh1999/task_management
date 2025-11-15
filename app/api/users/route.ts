@@ -1,4 +1,7 @@
-import { userSchema } from "@/app/users/schema/userSchema";
+import {
+  updateUserValidationSchema,
+  userSchema,
+} from "@/app/users/schema/userSchema";
 import { errorMessage, successMessage, warningMessage } from "@/lib/apiHandler";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
@@ -64,5 +67,37 @@ export async function DELETE(req: NextRequest) {
     return successMessage(200, user, "User deleted successfully");
   } catch (error: any) {
     return errorMessage(error.message || "Internal Server Error", 500);
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const { searchParams } = req.nextUrl;
+    const userData = await req.json();
+    const parsedUserData = updateUserValidationSchema.safeParse(userData);
+
+    if (!parsedUserData.success) {
+      return warningMessage("Fill the all input fields", 400);
+    }
+
+    const { company, email, mobile, name } = parsedUserData.data;
+
+    const id = searchParams.get("id") || "";
+    if (!id) {
+      return warningMessage("User not found", 400);
+    }
+    const user = await prisma.user.update({
+      where: { id },
+      data: {
+        company,
+        email,
+        mobile,
+        name,
+      },
+    });
+
+    return successMessage(201, user, "User updated successfully");
+  } catch (error) {
+    return errorMessage("Internal Server Error ", 500, String(error));
   }
 }
