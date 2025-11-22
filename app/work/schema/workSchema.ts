@@ -10,6 +10,9 @@ export const workSchema = z.object({
   }),
   startDate: z.coerce.date({ message: "Start Date is required" }),
   endDate: z.coerce.date({ message: "End Date is required" }),
+  assignedUsers: z.array(z.string(), {
+    message: "Assigned users must be an array of string",
+  }),
 });
 
 export type TWorkSchemaType = z.infer<typeof workSchema>;

@@ -14,7 +14,7 @@ export interface IProject {
 export interface TProjectFilter {
   userId?: string;
   search?: string;
-  state?: Status;
+  state?: Status | null;
   startDate?: Date;
   endDate?: Date;
 }

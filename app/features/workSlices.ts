@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { IWork, IWorkFilter } from "../types/workTypes";
 import axios from "axios";
-import { Status } from "@/lib/generated/prisma/enums";
 import { IResponseType } from "../types/reponseType";
+import { Status } from "@/lib/generated/prisma/enums";
 
 interface IInitialState {
   work: IWork | null;

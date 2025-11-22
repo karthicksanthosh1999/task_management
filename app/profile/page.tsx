@@ -20,11 +20,13 @@ import { useEffect, useState } from "react";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { IUser } from "../types/userTypes";
 import { updateUserThunk } from "../features/userSlices";
+import { useSession } from "next-auth/react";
 
 const page = () => {
   const [isEdit, setIsEdit] = useState(false);
 
-  const { user } = useAppSelector((state) => state.auth);
+  const { data: session } = useSession();
+  const user = session?.user;
   const dispatch = useAppDispatch();
 
   const form = useForm({

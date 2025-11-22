@@ -1,15 +1,18 @@
 import { fetchProjectsThunk } from "@/app/features/projectSlices";
 import { useAppDispatch } from "@/app/hooks/reduxHooks";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 interface IProps {
   setOpen: (open: boolean) => void;
   setFilterOpen: (open: boolean) => void;
+  setAiModelOpen: (open: boolean) => void;
 }
 
-const ProjectHeader = ({ setOpen, setFilterOpen }: IProps) => {
+const ProjectHeader = ({ setOpen, setFilterOpen, setAiModelOpen }: IProps) => {
 
   const [search, setSearch] = useState<string>("");
   const dispatch = useAppDispatch();
@@ -36,6 +39,13 @@ const ProjectHeader = ({ setOpen, setFilterOpen }: IProps) => {
         onChange={(e) => setSearch(e.target.value)}
       />
       <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          className="cursor-pointer"
+          onClick={() => setAiModelOpen(true)}
+        >
+          <Image src={'/ai.png'} width={25} height={25} alt="ai.png" />
+        </Button>
         <Button
           variant="secondary"
           className="cursor-pointer"

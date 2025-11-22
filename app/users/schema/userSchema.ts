@@ -6,6 +6,7 @@ export const userSchema = z.object({
   mobile: z.string({ message: "Mobile is required" }),
   password: z.string({ message: "Password is required" }),
   company: z.string({ message: "Company is required" }),
+  role: z.enum(["Admin", "Employee"], { message: "Role is required" })
 });
 
 export type UserSchemaType = z.infer<typeof userSchema>;
@@ -16,6 +17,7 @@ export const updateUserValidationSchema = z.object({
   mobile: z.string({ message: "Mobile is required" }),
   password: z.string().optional(),
   company: z.string({ message: "Company is required" }),
+  role: z.enum(["Admin", "Employee"], { message: "Role is required" })
 });
 
 export type TUpdateUserValidationSchemaType = z.infer<

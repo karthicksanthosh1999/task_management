@@ -28,7 +28,7 @@ export default NextAuth({
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: "/",
     signOut: "/",
     error: "/errorPage",
   },

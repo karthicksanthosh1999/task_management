@@ -1,45 +1,33 @@
 "use client";
-import { ReactNode, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
+
+import { ReactNode } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
-import { fetchLoginUser } from "../features/authSlices";
+import { useSession } from "next-auth/react";
 import GlobalLoading from "../loading";
-import { usePathname, useRouter } from "next/navigation";
 
 type TProps = {
   children: ReactNode;
 };
 
 const UserAuthProvider = ({ children }: TProps) => {
-  const { user, loading } = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
-  const router = useRouter();
-  const pathname = usePathname();
+  const { data: session, status } = useSession();
 
-  const publicRoutes = ["/login", "/signup"];
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center">
+        <GlobalLoading />
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    dispatch(fetchLoginUser());
-  }, [dispatch]);
+  // 🔴 If NOT logged in → do NOT render sidebar/header
+  if (!session) {
+    return <div className="p-3">{children}</div>;
+  }
 
-  useEffect(() => {
-    if (!user && !publicRoutes.includes(pathname)) {
-      router.replace("/login");
-    }
-  }, [user, pathname, router]);
-
-  useEffect(() => {
-    if (user && publicRoutes.includes(pathname)) {
-      router.replace("/dashboard");
-    }
-  }, [user, pathname, router]);
-
-  if (loading) return <GlobalLoading />;
-
-  const isPublic = publicRoutes.includes(pathname);
-
+  // 🟢 Logged in → show sidebar + header
   return (
     <SidebarProvider
       style={
@@ -47,14 +35,11 @@ const UserAuthProvider = ({ children }: TProps) => {
           "--sidebar-width": "calc(var(--spacing) * 72)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
-      }>
-      {/* Sidebar only for private routes */}
-      {!isPublic && user && <AppSidebar variant="inset" />}
-
+      }
+    >
+      <AppSidebar variant="inset" />
       <SidebarInset>
-        {/* Header only for private routes */}
-        {!isPublic && user && <SiteHeader />}
-
+        <SiteHeader />
         <div className="p-3">{children}</div>
       </SidebarInset>
     </SidebarProvider>

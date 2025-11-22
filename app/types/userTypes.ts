@@ -5,6 +5,7 @@ export interface IUser {
   mobile: string;
   password: string;
   company: string
+  role: string
 
   image?: string;
 }

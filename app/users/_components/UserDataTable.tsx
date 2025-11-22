@@ -4,9 +4,10 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -15,6 +16,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -27,14 +37,101 @@ export function DataTable<TData, TValue>({
   data,
   loading
 }: DataTableProps<TData, TValue>) {
+
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({})
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnVisibility,
+    },
   });
 
   return (
-    <div className="overflow-hidden rounded-md border">
+    <div className="overflow-hidden rounded-md border space-y-5">
+      <Card>
+        <CardContent>
+          <CardHeader>
+            <CardTitle>Filters:</CardTitle>
+          </CardHeader>
+          <div className="flex items-center justify-end gap-2">
+            {/* ROLE BASED FILTER */}
+            <div className="flex items-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="ml-auto">
+                    Filter by Role
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end">
+                  <DropdownMenuCheckboxItem
+                    checked={table.getColumn("role")?.getFilterValue() === undefined}
+                    onCheckedChange={() =>
+                      table.getColumn("role")?.setFilterValue(undefined)
+                    }
+                  >
+                    All
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={table.getColumn("role")?.getFilterValue() === "Admin"}
+                    onCheckedChange={(v) =>
+                      table.getColumn("role")?.setFilterValue(v ? "Admin" : undefined)
+                    }
+                  >
+                    Admin
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={table.getColumn("role")?.getFilterValue() === "Employee"}
+                    onCheckedChange={(v) =>
+                      table.getColumn("role")?.setFilterValue(v ? "Employee" : undefined)
+                    }
+                  >
+                    Employee
+                  </DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            {/* COLUMN BASED FILTER */}
+            <div className="flex items-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="ml-auto">
+                    Columns
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {table
+                    .getAllColumns()
+                    .filter(
+                      (column) => column.getCanHide()
+                    )
+                    .map((column) => {
+                      return (
+                        <DropdownMenuCheckboxItem
+                          key={column.id}
+                          className="capitalize"
+                          checked={column.getIsVisible()}
+                          onCheckedChange={(value) =>
+                            column.toggleVisibility(!!value)
+                          }
+                        >
+                          {column.id}
+                        </DropdownMenuCheckboxItem>
+                      )
+                    })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+          </div>
+        </CardContent>
+      </Card>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

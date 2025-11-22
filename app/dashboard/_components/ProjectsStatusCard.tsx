@@ -67,7 +67,6 @@ const ProjectsStatusCard = () => {
       .get("/api/work/daily-status-chart")
       .then((res) => {
         let data = res.data?.data;
-        console.log(data);
         const dates = data.map((d: IChartStatus) =>
           isoDateFormatForChart(new Date(d.day))
         );

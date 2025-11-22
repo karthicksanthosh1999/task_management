@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
   projectValidationSchema,
-  TProjectValidationSchema,
 } from "../schema/projectSchema";
 import {
   Form,
@@ -38,6 +37,7 @@ import {
 import { toast } from "sonner";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { IProject } from "@/app/types/projectTypes";
+import { useSession } from "next-auth/react";
 
 interface IProps {
   open: boolean;
@@ -48,7 +48,9 @@ interface IProps {
 
 const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
+
+  const { data: session } = useSession()
+  const user = session?.user
 
   const form = useForm({
     resolver: zodResolver(projectValidationSchema),
@@ -106,8 +108,10 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
           <form
             onSubmit={form.handleSubmit(handleOnSubmit)}
             className="space-y-3">
+            {/* TITLE INPUT  */}
             <div className="space-y-3">
               <FormLabel>Project Title:</FormLabel>
+
               <FormField
                 name="title"
                 control={form.control}
@@ -123,6 +127,7 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
                 )}
               />
             </div>
+            {/* STATE INPUT */}
             <div className="space-y-3">
               <FormLabel>Select State</FormLabel>
               <FormField
@@ -151,7 +156,8 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
                 )}
               />
             </div>
-            <div className="md:w-sm w-full space-y-3">
+            {/* START DATE INPUT */}
+            <div className="space-y-3">
               <FormLabel>Start Date</FormLabel>
               <FormField
                 name="startDate"
@@ -167,7 +173,8 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
                 )}
               />
             </div>
-            <div className="md:w-sm w-full space-y-3">
+            {/* END DATE INPUT */}
+            <div className="space-y-3">
               <FormLabel>End Date</FormLabel>
               <FormField
                 name="endDate"
@@ -183,6 +190,7 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
                 )}
               />
             </div>
+
             <DialogFooter>
               <Button
                 className="cursor-pointer"

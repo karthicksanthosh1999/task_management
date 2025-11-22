@@ -25,7 +25,6 @@ const DeleteModel = ({
   description,
   title,
 }: IProps) => {
-  console.log({ deleteId });
 
   const handleClose = () => {
     setOpen(false);

@@ -8,21 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldSeparator,
-} from "@/components/ui/field";
+import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { FormField, FormItem, FormMessage, Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch } from "@/app/hooks/reduxHooks";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userValidationSchema } from "@/app/login/schema/loginValidationSchema";
-import { loginUser } from "@/app/features/authSlices";
+import { signIn } from "next-auth/react";
 import { TLoginTypes } from "@/app/types/loginTypes";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export function LoginForm({
@@ -37,23 +32,27 @@ export function LoginForm({
   });
 
   const handleLogin = async (values: TLoginTypes) => {
-    try {
-      await dispatch(loginUser(values));
-      toast.success("User login successfully");
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: values?.email,
+      password: values?.password,
+    });
+    if (res?.error) {
+      toast.error("Invalid email or password");
+    } else {
       router.push("/dashboard");
-    } catch (error) {
-      toast.error("Invalid credentials");
+      toast.success("User login successfully...👍");
     }
   };
 
   return (
-    <div className={cn("flex items-center justify-center", className)} {...props}>
+    <div
+      className={cn("h-[90vh] flex items-center justify-center", className)}
+      {...props}>
       <Card className="w-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Task Manager</CardTitle>
-          <CardDescription>
-            Login with your Email and Password
-          </CardDescription>
+          <CardDescription>Login with your Email and Password</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -90,12 +89,21 @@ export function LoginForm({
                   )}
                 />
                 <Field>
-                  <Button type="submit" className="cursor-pointer">Login</Button>
+                  <Button type="submit" className="cursor-pointer">
+                    Login
+                  </Button>
                 </Field>
               </FieldGroup>
             </form>
           </Form>
         </CardContent>
+        <FieldDescription className="text-center">
+          You don't have an account Go to the{" "}
+          <b onClick={() => router.push("/signup")} className="cursor-pointer">
+            Signup
+          </b>{" "}
+          form
+        </FieldDescription>
       </Card>
     </div>
   );

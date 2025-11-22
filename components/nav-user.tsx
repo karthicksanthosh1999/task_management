@@ -24,17 +24,10 @@ import {
 } from "@/components/ui/sidebar";
 import { redirect } from "next/navigation";
 import { IUser } from "@/app/types/userTypes";
-import { logOutUserThunk } from "@/app/features/authSlices";
-import { useAppDispatch } from "@/app/hooks/reduxHooks";
+import { signOut } from "next-auth/react";
 
 export function NavUser({ user }: { user: IUser }) {
   const { isMobile } = useSidebar();
-
-  const dispatch = useAppDispatch();
-
-  const handleLogout = () => {
-    dispatch(logOutUserThunk());
-  };
 
   return (
     <SidebarMenu>
@@ -90,7 +83,7 @@ export function NavUser({ user }: { user: IUser }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
               <IconLogout />
               Log out
             </DropdownMenuItem>

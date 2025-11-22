@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -13,28 +15,56 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { IUser } from "@/app/types/userTypes";
 import { useAppDispatch } from "@/app/hooks/reduxHooks";
-import { addUserThunk } from "@/app/features/userSlices";
+import { addUserThunk, updateUserThunk } from "@/app/features/userSlices";
 import { toast } from "sonner";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useEffect } from "react";
+import { roles } from "@/lib/generated/prisma/enums";
 
 interface IProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  existingUser?: IUser,
+  mode: "Create" | "Update"
 }
 
-const UserForm = ({ open, setOpen }: IProps) => {
+const UserForm = ({ open, setOpen, mode, existingUser }: IProps) => {
+
   const dispatch = useAppDispatch();
 
   const form = useForm({
     resolver: zodResolver(userSchema),
   });
 
+  useEffect(() => {
+    if (existingUser) {
+      form.reset({
+        company: existingUser?.company,
+        email: existingUser?.email,
+        mobile: existingUser?.mobile,
+        name: existingUser?.name,
+        role: existingUser?.role as roles,
+      })
+    }
+  }, [form, existingUser])
+
+
   const handleUserSubmit = async (userData: IUser) => {
-    try {
-      await dispatch(addUserThunk(userData)).unwrap();
-      toast.success("User added successfully ✅");
-      setOpen(false)
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
+    if (mode === "Create") {
+      try {
+        await dispatch(addUserThunk(userData)).unwrap();
+        toast.success("User added successfully ✅");
+        setOpen(false)
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    } else {
+      try {
+        await dispatch(updateUserThunk(userData));
+        toast.success("User updated successfully ✅");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
     }
   };
 
@@ -52,6 +82,7 @@ const UserForm = ({ open, setOpen }: IProps) => {
           <form
             onSubmit={form.handleSubmit(handleUserSubmit)}
             className="space-y-5">
+            {/* NAME INPUT */}
             <FormField
               name="name"
               control={form.control}
@@ -62,20 +93,26 @@ const UserForm = ({ open, setOpen }: IProps) => {
                 </FormItem>
               )}
             />
-            <FormField
-              name="password"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <Input
-                    placeholder="Enter password"
-                    {...field}
-                    type="password"
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* PASSWORD INPUT */}
+            {
+              mode === "Create" && (
+                <FormField
+                  name="password"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Input
+                        placeholder="Enter password"
+                        {...field}
+                        type="password"
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )
+            }
+            {/* MOBILE INPUT */}
             <FormField
               name="mobile"
               control={form.control}
@@ -90,6 +127,7 @@ const UserForm = ({ open, setOpen }: IProps) => {
                 </FormItem>
               )}
             />
+            {/* EMAIL INPUT */}
             <FormField
               name="email"
               control={form.control}
@@ -100,6 +138,33 @@ const UserForm = ({ open, setOpen }: IProps) => {
                 </FormItem>
               )}
             />
+
+            {/* ROLE INPUT */}
+            <FormField
+              name="role"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    name={field.name}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select State" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="Admin">Admin</SelectItem>
+                        <SelectItem value="Employee">Employee</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* COMPANY INPUT */}
             <FormField
               name="company"
               control={form.control}

@@ -4,31 +4,40 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// generator client {
+//   provider = "prisma-client"
+//   output   = "../lib/generated/prisma"
+// }
+
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
+  binaryTargets = ["native"]
 }
+
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id       String @id @default(uuid())
+  id       String  @id @default(uuid())
   name     String
-  email    String @unique
-  mobile   String @unique 
-  password String @unique
+  email    String  @unique
+  mobile   String  @unique
+  password String // DO NOT make unique
   company  String
+  image    String?
+  role     roles   @default(Employee)
 
-  image String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  works     Work[]
-  project   Project[]
+  project Project[]
+  works   Work[]
+
+  // Many-to-many assignment relation
+  assignedWorks Work[] @relation("WorkAssignments")
 }
 
 model Project {
@@ -38,10 +47,9 @@ model Project {
   state     Status   @default(Progress)
   startDate DateTime
   endDate   DateTime
-
-  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   works     Work[]
 }
 
@@ -54,10 +62,19 @@ model Work {
   startDate DateTime
   endDate   DateTime
 
-  project   Project  @relation(fields: [projectId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Many-to-many assigned users
+  assignedUsers User[] @relation("WorkAssignments")
+}
+
+enum roles {
+  Admin
+  Employee
 }
 
 enum Status {

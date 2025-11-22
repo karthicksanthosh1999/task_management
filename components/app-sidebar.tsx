@@ -2,10 +2,12 @@
 
 import * as React from "react";
 import {
+  Icon,
   IconDashboard,
   IconFolder,
   IconInnerShadowTop,
   IconListDetails,
+  IconMessage,
   IconUser,
 } from "@tabler/icons-react";
 import { NavMain } from "@/components/nav-main";
@@ -20,36 +22,41 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { useAppSelector } from "@/app/hooks/reduxHooks";
 import { IUser } from "@/app/types/userTypes";
-
-const data = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: IconDashboard,
-    },
-    {
-      title: "Work",
-      url: "/work",
-      icon: IconListDetails,
-    },
-    {
-      title: "Projects",
-      url: "/projects",
-      icon: IconFolder,
-    },
-    {
-      title: "Users",
-      url: "/users",
-      icon: IconUser,
-    },
-  ],
-};
+import { useSession } from "next-auth/react";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAppSelector((state) => state.auth);
+  const { data: session } = useSession()
+  const user = session?.user;
+  const userType = session?.user?.role;
+
+  type TLinks = { title: string, url: string, icon: Icon };
+  type TUserTypeNavbar = { navMain: TLinks[] };
+
+
+  const ROUTES = {
+    common: [
+      { title: "Dashboard", url: "/dashboard", icon: IconDashboard },
+      { title: "Chat", url: "/chat", icon: IconMessage },
+    ],
+
+    adminOnly: [
+      { title: "Work", url: "/work", icon: IconListDetails },
+      { title: "Projects", url: "/projects", icon: IconFolder },
+      { title: "Users", url: "/users", icon: IconUser },
+    ],
+
+    employeeOnly: [
+      { title: "Work", url: "/work", icon: IconListDetails },
+    ],
+  } as const;
+
+  const navData: TUserTypeNavbar = {
+    navMain: [
+      ...ROUTES.common,
+      ...(userType === "Admin" ? ROUTES.adminOnly : ROUTES.employeeOnly),
+    ],
+  };
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -70,7 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navData.navMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user as IUser} />

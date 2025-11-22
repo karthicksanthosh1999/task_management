@@ -6,17 +6,19 @@ import { errorMessage, successMessage, warningMessage } from "@/lib/apiHandler";
 import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
+import { Prisma, roles } from "@/lib/generated/prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
     const parseUser = await req.json();
     const parsedUserSchema = userSchema.safeParse(parseUser);
+
     if (!parsedUserSchema.success) {
       return warningMessage("Please fill the all fields...", 400);
     }
-    const { company, email, mobile, name, password } = parsedUserSchema.data;
+    const { company, email, mobile, name, password, role } =
+      parsedUserSchema.data;
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(company, email, mobile, name, password);
     const user = await prisma.user.create({
       data: {
         name,
@@ -24,9 +26,9 @@ export async function POST(req: NextRequest) {
         mobile,
         password: hashedPassword,
         company,
+        role,
       },
     });
-
     return successMessage(201, user, "User created successfully");
   } catch (error) {
     return errorMessage(error instanceof Error ? error.message : String(error));
@@ -35,16 +37,26 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = await req.nextUrl;
+    const { searchParams } = req.nextUrl;
+
+    const whereClass: Prisma.UserWhereInput = {};
+
     const search = searchParams.get("search") || "";
+    const role = searchParams.get("role") || "";
+
+    if (search) {
+      whereClass.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+        { mobile: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    if (role) {
+      whereClass.role = role as roles;
+    }
     const user = await prisma.user.findMany({
-      where: {
-        OR: [
-          { name: { contains: search, mode: "insensitive" } },
-          { email: { contains: search, mode: "insensitive" } },
-          { mobile: { contains: search, mode: "insensitive" } },
-        ],
-      },
+      where: whereClass,
       orderBy: { createdAt: "desc" },
     });
     return successMessage(200, user, "User filter successfully");
@@ -57,7 +69,7 @@ export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl;
     const id = searchParams.get("id");
-
+    console.log(id);
     if (!id) {
       return warningMessage("User ID is required", 400);
     }
@@ -80,7 +92,7 @@ export async function PUT(req: NextRequest) {
       return warningMessage("Fill the all input fields", 400);
     }
 
-    const { company, email, mobile, name } = parsedUserData.data;
+    const { company, email, mobile, name, role } = parsedUserData.data;
 
     const id = searchParams.get("id") || "";
     if (!id) {
@@ -93,6 +105,7 @@ export async function PUT(req: NextRequest) {
         email,
         mobile,
         name,
+        role,
       },
     });
 

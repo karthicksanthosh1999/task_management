@@ -6,8 +6,15 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  VisibilityState,
+  getFilteredRowModel
 } from "@tanstack/react-table";
-
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Table,
   TableBody,
@@ -17,6 +24,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -29,16 +38,117 @@ export function DataTable<TData, TValue>({
   data,
   loading
 }: DataTableProps<TData, TValue>) {
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnVisibility,
+    },
   });
 
   return (
     <>
       <div className="overflow-hidden rounded-md border">
+        <Card>
+          <CardContent>
+            <CardHeader>
+              <CardTitle>Filters:</CardTitle>
+            </CardHeader>
+            <div className="flex items-center justify-end gap-2">
+              {/* STATUS BASED FILTER */}
+              <div className="flex items-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="ml-auto">
+                      Filter by Status
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuCheckboxItem
+                      checked={table.getColumn("state")?.getFilterValue() === undefined}
+                      onCheckedChange={() =>
+                        table.getColumn("state")?.setFilterValue(undefined)
+                      }
+                    >
+                      All
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={table.getColumn("state")?.getFilterValue() === "Pending"}
+                      onCheckedChange={(v) =>
+                        table.getColumn("state")?.setFilterValue(v ? "Pending" : undefined)
+                      }
+                    >
+                      Pending
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={table.getColumn("state")?.getFilterValue() === "Completed"}
+                      onCheckedChange={(v) =>
+                        table.getColumn("state")?.setFilterValue(v ? "Completed" : undefined)
+                      }
+                    >
+                      Completed
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={table.getColumn("state")?.getFilterValue() === "Planning"}
+                      onCheckedChange={(v) =>
+                        table.getColumn("state")?.setFilterValue(v ? "Planning" : undefined)
+                      }
+                    >
+                      Planning
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={table.getColumn("state")?.getFilterValue() === "Progress"}
+                      onCheckedChange={(v) =>
+                        table.getColumn("state")?.setFilterValue(v ? "Progress" : undefined)
+                      }
+                    >
+                      Progress
+                    </DropdownMenuCheckboxItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              {/* COLUMN BASED FILTER */}
+              <div className="flex items-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="ml-auto">
+                      Columns
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {table
+                      .getAllColumns()
+                      .filter(
+                        (column) => column.getCanHide()
+                      )
+                      .map((column) => {
+                        return (
+                          <DropdownMenuCheckboxItem
+                            key={column.id}
+                            className="capitalize"
+                            checked={column.getIsVisible()}
+                            onCheckedChange={(value) =>
+                              column.toggleVisibility(!!value)
+                            }
+                          >
+                            {column.id}
+                          </DropdownMenuCheckboxItem>
+                        )
+                      })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

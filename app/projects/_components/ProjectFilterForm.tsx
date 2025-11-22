@@ -1,30 +1,28 @@
 import { Button } from "@/components/ui/button"
 import {
     Drawer,
-    DrawerClose,
     DrawerContent,
     DrawerDescription,
-    DrawerFooter,
     DrawerHeader,
     DrawerTitle,
 } from "@/components/ui/drawer"
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { projectFilterValidationSchema, TProjectFilterValidation } from "../schema/projectSchema";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DialogFooter } from "@/components/ui/dialog";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { useAppDispatch } from "@/app/hooks/reduxHooks";
 import { fetchProjectsThunk } from "@/app/features/projectSlices";
-import { useEffect } from "react";
+import { useCallback } from "react";
+import { TProjectFilter } from "@/app/types/projectTypes";
 
 
 interface IProps {
     open: boolean;
     setOpen: (open: boolean) => void;
+    setFilteredInput: (projectFilter: TProjectFilter) => void
 
 }
 
@@ -37,13 +35,10 @@ const ProjectFilterForm = ({ open, setOpen }: IProps) => {
         resolver: zodResolver(projectFilterValidationSchema),
     });
 
-    const handleOnSubmit = async (values: TProjectFilterValidation) => {
-        handleReset();
-        if (values) {
-            dispatch(fetchProjectsThunk({}));
-        }
-        toast.success("Project Filtered Successfully...🎉");
-    };
+    const handleOnSubmit = useCallback(async (values: TProjectFilterValidation) => {
+        setFilteredInput({ ...values, state: values?.state ?? null })
+    }, []);
+
     const handleReset = () => {
         setOpen(false);
     };
@@ -131,7 +126,7 @@ const ProjectFilterForm = ({ open, setOpen }: IProps) => {
                                 </div>
                                 <div className="w-full items-center justify-center flex gap-3">
                                     <Button type="submit" className=" cursor-pointer" variant={'default'}>Apply</Button>
-                                    <Button type="button" className=" cursor-pointer" variant={'destructive'}>Reset</Button>
+                                    <Button type="reset" className=" cursor-pointer" variant={'destructive'} onClick={() => form.reset()}>Reset</Button>
                                 </div>
                                 <div>
                                     <Button type="reset" variant={'destructive'} className=" w-auto sm:w-full cursor-pointer" onClick={handleCloseAndReset}>Close</Button>

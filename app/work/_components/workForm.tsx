@@ -33,6 +33,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { MultiSelect, MultiSelectOption } from "@/components/multi-select";
+import { fetchUsersThunk } from "@/app/features/userSlices";
 
 type Props = {
   mode?: "create" | "update";
@@ -44,11 +46,13 @@ type Props = {
 const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
   const { user } = useAppSelector((state) => state.auth);
   const { projects: projectList } = useAppSelector((state) => state.projects);
+  const { users } = useAppSelector((state) => state.users);
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchProjectsThunk({}));
+    dispatch(fetchUsersThunk({ role: "Employee", search: "" }));
   }, [dispatch]);
 
   useEffect(() => {
@@ -101,6 +105,11 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
       toast.success("Work update successfully...🎉");
     }
   };
+  console.log(form.formState.errors);
+  const frameworksList = users.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
 
   return (
     <>
@@ -178,6 +187,24 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
                           </SelectGroup>
                         </SelectContent>
                       </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="assignedUsers"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Frameworks</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={frameworksList ?? []}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder="Choose frameworks..."
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

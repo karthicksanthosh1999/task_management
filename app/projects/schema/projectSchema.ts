@@ -11,7 +11,7 @@ export const projectValidationSchema = z.object({
 export type TProjectValidationSchema = z.infer<typeof projectValidationSchema>;
 
 export const projectFilterValidationSchema = z.object({
-  state: z.string().optional(),
+  state: z.enum(["Pending", "Completed", "Planning", "Progress"]).optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
 });

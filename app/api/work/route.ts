@@ -5,12 +5,12 @@ import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const workBody = await req.json();
+  console.log(workBody);
   const parsedWork = workSchema.safeParse(workBody);
   if (!parsedWork.success) {
     return warningMessage("Please fill the all fields", 400);
   }
-
-  const { endDate, projectId, startDate, state, title, userId } =
+  const { endDate, projectId, startDate, state, title, userId, assignedUsers } =
     parsedWork.data;
   try {
     const work = await prisma.work.create({
@@ -19,6 +19,9 @@ export async function POST(req: NextRequest) {
         startDate,
         title,
         projectId,
+        assignedUsers: {
+          connect: assignedUsers.map((userId: string) => ({ id: userId })),
+        },
         userId,
         state: state,
       },
