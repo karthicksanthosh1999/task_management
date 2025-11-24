@@ -6,6 +6,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { useSession } from "next-auth/react";
 import GlobalLoading from "../loading";
+import Snowfall from "react-snowfall";
 
 type TProps = {
   children: ReactNode;
@@ -40,6 +41,7 @@ const UserAuthProvider = ({ children }: TProps) => {
       <SidebarInset>
         <SiteHeader />
         <div className="p-3">{children}</div>
+        <Snowfall />
       </SidebarInset>
     </SidebarProvider>
   );

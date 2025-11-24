@@ -24,15 +24,15 @@ import {
 import Link from "next/link";
 import { IUser } from "@/app/types/userTypes";
 import { useSession } from "next-auth/react";
+import NavNews from "./NavNews";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
   const user = session?.user;
   const userType = session?.user?.role;
 
-  type TLinks = { title: string, url: string, icon: Icon };
+  type TLinks = { title: string; url: string; icon: Icon };
   type TUserTypeNavbar = { navMain: TLinks[] };
-
 
   const ROUTES = {
     common: [
@@ -46,9 +46,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       { title: "Users", url: "/users", icon: IconUser },
     ],
 
-    employeeOnly: [
-      { title: "Work", url: "/work", icon: IconListDetails },
-    ],
+    employeeOnly: [{ title: "Work", url: "/work", icon: IconListDetails }],
   } as const;
 
   const navData: TUserTypeNavbar = {
@@ -78,6 +76,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navData.navMain} />
+        <NavNews />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user as IUser} />

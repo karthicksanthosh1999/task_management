@@ -7,14 +7,14 @@ import {
   useReactTable,
   getPaginationRowModel,
   VisibilityState,
-  getFilteredRowModel
+  getFilteredRowModel,
 } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -30,16 +30,15 @@ import { useState } from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  loading: boolean
+  loading: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  loading
+  loading,
 }: DataTableProps<TData, TValue>) {
-
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const table = useReactTable({
     data,
@@ -57,10 +56,10 @@ export function DataTable<TData, TValue>({
     <>
       <div className="overflow-hidden rounded-md border">
         <Card>
-          <CardContent>
-            <CardHeader>
-              <CardTitle>Filters:</CardTitle>
-            </CardHeader>
+          <CardContent className="flex items-center justify-between">
+            <div>
+              <h1>Filters</h1>
+            </div>
             <div className="flex items-center justify-end gap-2">
               {/* STATUS BASED FILTER */}
               <div className="flex items-center">
@@ -73,43 +72,59 @@ export function DataTable<TData, TValue>({
 
                   <DropdownMenuContent align="end">
                     <DropdownMenuCheckboxItem
-                      checked={table.getColumn("state")?.getFilterValue() === undefined}
+                      checked={
+                        table.getColumn("state")?.getFilterValue() === undefined
+                      }
                       onCheckedChange={() =>
                         table.getColumn("state")?.setFilterValue(undefined)
-                      }
-                    >
+                      }>
                       All
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={table.getColumn("state")?.getFilterValue() === "Pending"}
-                      onCheckedChange={(v) =>
-                        table.getColumn("state")?.setFilterValue(v ? "Pending" : undefined)
+                      checked={
+                        table.getColumn("state")?.getFilterValue() === "Pending"
                       }
-                    >
+                      onCheckedChange={(v) =>
+                        table
+                          .getColumn("state")
+                          ?.setFilterValue(v ? "Pending" : undefined)
+                      }>
                       Pending
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={table.getColumn("state")?.getFilterValue() === "Completed"}
-                      onCheckedChange={(v) =>
-                        table.getColumn("state")?.setFilterValue(v ? "Completed" : undefined)
+                      checked={
+                        table.getColumn("state")?.getFilterValue() ===
+                        "Completed"
                       }
-                    >
+                      onCheckedChange={(v) =>
+                        table
+                          .getColumn("state")
+                          ?.setFilterValue(v ? "Completed" : undefined)
+                      }>
                       Completed
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={table.getColumn("state")?.getFilterValue() === "Planning"}
-                      onCheckedChange={(v) =>
-                        table.getColumn("state")?.setFilterValue(v ? "Planning" : undefined)
+                      checked={
+                        table.getColumn("state")?.getFilterValue() ===
+                        "Planning"
                       }
-                    >
+                      onCheckedChange={(v) =>
+                        table
+                          .getColumn("state")
+                          ?.setFilterValue(v ? "Planning" : undefined)
+                      }>
                       Planning
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={table.getColumn("state")?.getFilterValue() === "Progress"}
-                      onCheckedChange={(v) =>
-                        table.getColumn("state")?.setFilterValue(v ? "Progress" : undefined)
+                      checked={
+                        table.getColumn("state")?.getFilterValue() ===
+                        "Progress"
                       }
-                    >
+                      onCheckedChange={(v) =>
+                        table
+                          .getColumn("state")
+                          ?.setFilterValue(v ? "Progress" : undefined)
+                      }>
                       Progress
                     </DropdownMenuCheckboxItem>
                   </DropdownMenuContent>
@@ -126,9 +141,7 @@ export function DataTable<TData, TValue>({
                   <DropdownMenuContent align="end">
                     {table
                       .getAllColumns()
-                      .filter(
-                        (column) => column.getCanHide()
-                      )
+                      .filter((column) => column.getCanHide())
                       .map((column) => {
                         return (
                           <DropdownMenuCheckboxItem
@@ -137,11 +150,10 @@ export function DataTable<TData, TValue>({
                             checked={column.getIsVisible()}
                             onCheckedChange={(value) =>
                               column.toggleVisibility(!!value)
-                            }
-                          >
+                            }>
                             {column.id}
                           </DropdownMenuCheckboxItem>
-                        )
+                        );
                       })}
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -159,9 +171,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}
@@ -171,14 +183,15 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center">
                   <div className="flex justify-center items-center gap-2">
                     <svg
                       className="animate-spin h-5 w-5 text-gray-500"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
-                      viewBox="0 0 24 24"
-                    >
+                      viewBox="0 0 24 24">
                       <circle
                         className="opacity-25"
                         cx="12"
@@ -199,24 +212,29 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
-
-
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
@@ -229,16 +247,14 @@ export function DataTable<TData, TValue>({
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
+            disabled={!table.getCanPreviousPage()}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
+            disabled={!table.getCanNextPage()}>
             Next
           </Button>
         </div>
