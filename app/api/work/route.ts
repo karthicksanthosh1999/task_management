@@ -5,7 +5,6 @@ import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const workBody = await req.json();
-  console.log(workBody);
   const parsedWork = workSchema.safeParse(workBody);
   if (!parsedWork.success) {
     return warningMessage("Please fill the all fields", 400);
@@ -20,12 +19,12 @@ export async function POST(req: NextRequest) {
         title,
         projectId,
         assignedUsers: {
-          connect: assignedUsers.map((userId: string) => ({ id: userId })),
+          connect: assignedUsers?.map((userId: string) => ({ id: userId })),
         },
         userId,
         state: state,
       },
-      include: { project: true },
+      include: { project: true, assignedUsers: true },
     });
     return successMessage(201, work, "Work created successfully");
   } catch (error) {

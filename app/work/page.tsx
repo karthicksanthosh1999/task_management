@@ -6,15 +6,20 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
 import { fetchWorkThunk } from "../features/workSlices";
 import WorkHeader from "./_components/WorkHeader";
+import { useSession } from "next-auth/react";
 
 const page = () => {
+
+  const { data: session } = useSession();
+  const user = session?.user
+
   const [workOpenForm, setWorkOpenForm] = useState<boolean>(false);
   const { works, loading } = useAppSelector((state) => state.works);
   const dispatch = useAppDispatch();
 
 
   useEffect(() => {
-    dispatch(fetchWorkThunk({}));
+    dispatch(fetchWorkThunk({ role: user?.role, userId: user?.id }));
   }, [dispatch]);
 
   return (

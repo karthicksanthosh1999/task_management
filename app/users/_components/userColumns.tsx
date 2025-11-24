@@ -9,6 +9,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import UserForm from "./userForm";
 import { useSession } from "next-auth/react";
+import { isoDateFormat } from "@/lib/utils";
+import UserActivityModel from "./userActivityModel";
 
 export const UserColumns: ColumnDef<IUser>[] = [
   {
@@ -32,6 +34,13 @@ export const UserColumns: ColumnDef<IUser>[] = [
     header: "Company",
   },
   {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => (
+      <h1>{isoDateFormat(row?.original?.createdAt!)}</h1>
+    )
+  },
+  {
     header: "Actions",
     cell: ({ row }) => {
       const { id } = row.original;
@@ -43,6 +52,7 @@ export const UserColumns: ColumnDef<IUser>[] = [
       // STATES SECTION
       const [updateModelOpen, setUpdateModelOpen] = useState(false)
       const [open, setOpen] = useState(false);
+      const [openActivity, setOpenActivity] = useState(false)
 
       const fetchUpdatingUser = (id: string) => {
         try {
@@ -63,13 +73,14 @@ export const UserColumns: ColumnDef<IUser>[] = [
           toast.error("Something went wrong...❌");
         }
       };
-      console.log(updateModelOpen)
+
       return (
         <div className="space-x-2">
 
           <Button
             type="button"
             variant={"outline"}
+            className="cursor-pointer"
             onClick={() => fetchUpdatingUser(id!)}>
             Edit
           </Button>
@@ -77,8 +88,17 @@ export const UserColumns: ColumnDef<IUser>[] = [
           <Button
             type="button"
             variant={"destructive"}
+            className="cursor-pointer"
             onClick={() => setOpen(true)}>
             Delete
+          </Button>
+
+          <Button
+            type="button"
+            variant={"outline"}
+            className="cursor-pointer"
+            onClick={() => setOpenActivity(true)}>
+            Activity
           </Button>
 
           {/* USER UPDATE MODEL */}
@@ -98,6 +118,9 @@ export const UserColumns: ColumnDef<IUser>[] = [
             description="Are you sure you want to the user?"
             title="Delete User"
           />
+          {/* USER ACTIVITY MODEL */}
+
+          <UserActivityModel open={openActivity} setOpen={setOpenActivity} userId={user?.id!} />
         </div>
       );
     },

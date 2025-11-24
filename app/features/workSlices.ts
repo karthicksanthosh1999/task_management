@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { IWork, IWorkFilter } from "../types/workTypes";
 import axios from "axios";
 import { IResponseType } from "../types/reponseType";
-import { Status } from "@/lib/generated/prisma/enums";
 
 interface IInitialState {
   work: IWork | null;
@@ -40,14 +39,16 @@ export const fetchWorkThunk = createAsyncThunk<
 >(
   "work/fetchWork",
   async (
-    { endDate, projectId, startDate, state = "", title = "" },
+    { endDate, projectId, startDate, state = "", title = "", role = "", userId = "" },
     { rejectWithValue }
   ) => {
     try {
       const params = new URLSearchParams({
         title,
-        projectId: String(""),
-        state: String(Status ?? ""),
+        projectId: projectId ? projectId : "",
+        state: state ? state : "",
+        role: role ? role : "",
+        userId: userId ? userId : "",
         endDate: endDate ? endDate.toISOString() : "",
         startDate: startDate ? startDate.toISOString() : "",
       });

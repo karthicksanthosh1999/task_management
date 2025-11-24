@@ -8,4 +8,5 @@ export interface IUser {
   role: string
 
   image?: string;
+  createdAt?: Date;
 }

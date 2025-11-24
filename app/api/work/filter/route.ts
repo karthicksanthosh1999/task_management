@@ -13,6 +13,8 @@ export async function GET(req: NextRequest) {
         const status = searchParams.get("status") || "";
         const startDate = searchParams.get("startDate") || "";
         const endDate = searchParams.get("endDate") || "";
+        const role = searchParams.get("role") || "";
+        const userId = searchParams.get("userId") || "";
 
         const whereClass: Prisma.WorkWhereInput = {};
 
@@ -35,10 +37,16 @@ export async function GET(req: NextRequest) {
             ]
         }
 
+        if (role === "Employee") {
+            whereClass.assignedUsers = {
+                some: { id: userId }
+            }
+        }
+
         const work = await prisma.work.findMany({
             where: whereClass,
             orderBy: { startDate: "desc" },
-            include: { project: true },
+            include: { project: true, assignedUsers: true, user: true },
         })
         return successMessage(200, work, "Work fetched successfully");
 

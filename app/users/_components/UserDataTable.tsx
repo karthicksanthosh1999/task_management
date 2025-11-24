@@ -55,10 +55,10 @@ export function DataTable<TData, TValue>({
   return (
     <div className="overflow-hidden rounded-md border space-y-5">
       <Card>
-        <CardContent>
-          <CardHeader>
-            <CardTitle>Filters:</CardTitle>
-          </CardHeader>
+        <CardContent className="flex items-center justify-between">
+          <div>
+            <h1>Filters:</h1>
+          </div>
           <div className="flex items-center justify-end gap-2">
             {/* ROLE BASED FILTER */}
             <div className="flex items-center">
@@ -128,7 +128,6 @@ export function DataTable<TData, TValue>({
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-
           </div>
         </CardContent>
       </Card>

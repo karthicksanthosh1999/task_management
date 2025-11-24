@@ -119,7 +119,12 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload ?? "Failed to fetch users";
       });
-
+    builder.addCase(addUserThunk.fulfilled, (state, action) => {
+      state.users.push(action.payload)
+    })
+      .addCase(addUserThunk.rejected, (state, action) => {
+        state.error = action.payload ?? "Failed to create user"
+      })
     // FETCH SINGLE USER
     builder
       .addCase(fetchSingleUserThunk.fulfilled, (state, action) => {

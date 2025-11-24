@@ -35,6 +35,7 @@ import {
 import { toast } from "sonner";
 import { MultiSelect, MultiSelectOption } from "@/components/multi-select";
 import { fetchUsersThunk } from "@/app/features/userSlices";
+import { useSession } from "next-auth/react";
 
 type Props = {
   mode?: "create" | "update";
@@ -44,7 +45,10 @@ type Props = {
 };
 
 const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
-  const { user } = useAppSelector((state) => state.auth);
+
+  const { data: session } = useSession();
+  const user = session?.user;
+
   const { projects: projectList } = useAppSelector((state) => state.projects);
   const { users } = useAppSelector((state) => state.users);
 
@@ -105,7 +109,6 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
       toast.success("Work update successfully...🎉");
     }
   };
-  console.log(form.formState.errors);
   const frameworksList = users.map((item) => ({
     label: item.name,
     value: item.id,
@@ -192,24 +195,29 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="assignedUsers"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Select Frameworks</FormLabel>
-                    <FormControl>
-                      <MultiSelect
-                        options={frameworksList ?? []}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder="Choose frameworks..."
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* ASSIGNED USERS */}
+              {
+                user?.role === "Admin" && (
+                  <FormField
+                    control={form.control}
+                    name="assignedUsers"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Select Frameworks</FormLabel>
+                        <FormControl>
+                          <MultiSelect
+                            options={frameworksList ?? []}
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            placeholder="Choose frameworks..."
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )
+              }
               {/* START DATE */}
               <div className=" space-y-3">
                 <FormLabel>Start Date</FormLabel>

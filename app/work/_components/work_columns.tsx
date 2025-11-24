@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { MessageCircle, MoreHorizontal, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IWork } from "@/app/types/workTypes";
 import { cn, isoDateFormat } from "@/lib/utils";
@@ -17,18 +17,64 @@ import { useAppDispatch } from "@/app/hooks/reduxHooks";
 import { deleteWorkThunk } from "@/app/features/workSlices";
 import { toast } from "sonner";
 import WorkForm from "./workForm";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useSession } from "next-auth/react";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 export const WorkColumns: ColumnDef<IWork>[] = [
   {
     accessorKey: "title",
     header: "Title",
+    cell: ({ row }) => {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <h1 className={`w-[300px] truncate`}>
+            {row.original.title}
+            <span
+              className="text-blue-600 cursor-pointer"
+              onClick={() => setOpen(true)}>
+              ...Read
+            </span>
+          </h1>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Commits</DialogTitle>
+                <DialogDescription>Your Long Commits</DialogDescription>
+                <Separator className="my-2" />
+                <h1>{row.original?.title}</h1>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </>
+      );
+    },
   },
   {
     accessorKey: "WorkStart",
     header: "Start Date",
     cell: ({ row }) => <h1>{isoDateFormat(row.original.startDate)}</h1>,
   },
-
   {
     accessorKey: "workEnd",
     header: "End Date",
@@ -43,6 +89,90 @@ export const WorkColumns: ColumnDef<IWork>[] = [
     },
   },
   {
+    accessorKey: "assignedUsersList",
+    header: "Assigned Users",
+    cell: ({ row }) => {
+      const { data: session } = useSession();
+      const loggedUser = session?.user;
+      const { assignedUsers, user } = row.original;
+      return loggedUser?.email === user?.email && assignedUsers.length === 0 ? (
+        <></>
+      ) : (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="cursor-pointer" variant="outline">
+              <Users />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Assigned Users</DialogTitle>
+            </DialogHeader>
+            <h1>Created By:</h1>
+            <Item variant="outline">
+              <ItemMedia>
+                <Avatar className="size-10">
+                  <AvatarImage src={user?.image} />
+                  <AvatarFallback>ER</AvatarFallback>
+                </Avatar>
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>{user?.name}</ItemTitle>
+                <ItemDescription>
+                  {loggedUser?.id === user?.id ? "You" : user?.email}
+                </ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <Button
+                  size="icon-sm"
+                  variant="outline"
+                  className="rounded-full"
+                  aria-label="Invite">
+                  <MessageCircle />
+                </Button>
+              </ItemActions>
+            </Item>
+            <Separator />
+            <h1>Work Assigned Employee List:</h1>
+            {assignedUsers &&
+              assignedUsers.map((item) => (
+                <div className="max-h-[250px] space-y-2 overflow-auto">
+                  <Item variant="outline">
+                    <ItemMedia>
+                      <Avatar className="size-10">
+                        <AvatarImage src={item.image} />
+                        <AvatarFallback>ER</AvatarFallback>
+                      </Avatar>
+                    </ItemMedia>
+                    <ItemContent>
+                      <ItemTitle>{item.name}</ItemTitle>
+                      <ItemDescription>
+                        {loggedUser?.id === item?.id ? "You" : item.email}
+                      </ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                      <Button
+                        size="icon-sm"
+                        variant="outline"
+                        className="rounded-full"
+                        aria-label="Invite">
+                        <MessageCircle />
+                      </Button>
+                    </ItemActions>
+                  </Item>
+                </div>
+              ))}
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Close</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      );
+    },
+  },
+  {
     accessorKey: "workStatus",
     header: "Status",
     cell: ({ row }) => (
@@ -50,7 +180,8 @@ export const WorkColumns: ColumnDef<IWork>[] = [
         className={`${cn(
           row.original?.state === "Planning" ? "text-blue-400 " : "",
           row.original?.state === "Completed" ? "text-green-400 " : "",
-          row.original?.state === "Progress" ? "text-orange-400 " : ""
+          row.original?.state === "Progress" ? "text-orange-400 " : "",
+          row.original?.state === "Pending" ? "text-violet-600" : ""
         )} p-2 rounded-lg w-fit text-xs font-medium`}>
         {row.original.state.toUpperCase()}
       </p>

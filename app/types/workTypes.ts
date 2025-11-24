@@ -1,15 +1,17 @@
-import { Status } from "@/lib/generated/prisma/enums";
 import { IProject } from "./projectTypes";
 import { IUser } from "./userTypes";
+
+export type TStatus = "Pending" | "Completed" | "Planning" | "Progress";
 
 export interface IWork {
   id?: string;
   userId: string;
   title: string;
   projectId: string;
-  state: Status;
+  state: TStatus;
   startDate: Date;
   endDate: Date;
+  assignedUsers: IUser[];
 
   project?: IProject;
   user?: IUser;
@@ -17,8 +19,10 @@ export interface IWork {
 
 export interface IWorkFilter {
   title?: string;
-  state?: Status;
+  state?: TStatus;
   projectId?: string;
   startDate?: Date;
   endDate?: Date;
+  role?: string;
+  userId?: string;
 }
