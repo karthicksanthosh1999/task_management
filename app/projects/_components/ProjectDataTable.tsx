@@ -24,7 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
@@ -51,7 +51,6 @@ export function DataTable<TData, TValue>({
       columnVisibility,
     },
   });
-
   return (
     <>
       <div className="overflow-hidden rounded-md border">

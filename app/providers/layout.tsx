@@ -6,23 +6,27 @@ import { store } from "../store/store";
 import { Toaster } from "sonner";
 import UserAuthProvider from "./authProvider";
 import { SessionProvider } from "next-auth/react";
+import NewsProvider from "../context/providers/newsProvider";
 
 const MainLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <SessionProvider>
-      <Provider store={store}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange>
-          <UserAuthProvider>
-            {children}
-            <Toaster position="bottom-right" />
-          </UserAuthProvider>
-        </ThemeProvider>
-      </Provider>
+      {/* NEWS CONTEXT */}
+      <NewsProvider>
+        <Provider store={store}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange>
+            <UserAuthProvider>
+              {children}
+              <Toaster position="bottom-right" />
+            </UserAuthProvider>
+          </ThemeProvider>
+        </Provider>
+      </NewsProvider>
     </SessionProvider>
   );
 };

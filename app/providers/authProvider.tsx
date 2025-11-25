@@ -7,13 +7,19 @@ import { SiteHeader } from "@/components/site-header";
 import { useSession } from "next-auth/react";
 import GlobalLoading from "../loading";
 import Snowfall from "react-snowfall";
+import useNews from "../context/hooks/useNews";
 
 type TProps = {
   children: ReactNode;
 };
 
 const UserAuthProvider = ({ children }: TProps) => {
+
+  // NEXT-AUTH CUSTOM HOOK
   const { data: session, status } = useSession();
+
+  // NEWS UPDATE CUSTOM HOOK
+  const { snowfallEnable } = useNews()
 
   if (status === "loading") {
     return (
@@ -23,12 +29,10 @@ const UserAuthProvider = ({ children }: TProps) => {
     );
   }
 
-  // 🔴 If NOT logged in → do NOT render sidebar/header
   if (!session) {
     return <div className="p-3">{children}</div>;
   }
 
-  // 🟢 Logged in → show sidebar + header
   return (
     <SidebarProvider
       style={
@@ -41,7 +45,7 @@ const UserAuthProvider = ({ children }: TProps) => {
       <SidebarInset>
         <SiteHeader />
         <div className="p-3">{children}</div>
-        <Snowfall />
+        <Snowfall style={{ display: snowfallEnable ? 'block' : "none" }} />
       </SidebarInset>
     </SidebarProvider>
   );

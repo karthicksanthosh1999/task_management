@@ -2,12 +2,14 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { IWork, IWorkFilter } from "../types/workTypes";
 import axios from "axios";
 import { IResponseType } from "../types/reponseType";
+import { TWorkSchemaType } from "../work/schema/workSchema";
 
 interface IInitialState {
   work: IWork | null;
   works: IWork[];
   loading: boolean;
   error: string | null;
+  existingWork: TWorkSchemaType | null;
 }
 
 const initialState: IInitialState = {
@@ -15,11 +17,12 @@ const initialState: IInitialState = {
   loading: false,
   work: null,
   works: [],
+  existingWork: null,
 };
 
 export const createWorkThunk = createAsyncThunk<
   IWork,
-  IWork,
+  TWorkSchemaType,
   { rejectValue: string }
 >("work/createWork", async (work, { rejectWithValue }) => {
   try {
@@ -39,7 +42,15 @@ export const fetchWorkThunk = createAsyncThunk<
 >(
   "work/fetchWork",
   async (
-    { endDate, projectId, startDate, state = "", title = "", role = "", userId = "" },
+    {
+      endDate,
+      projectId,
+      startDate,
+      state = "",
+      title = "",
+      role = "",
+      userId = "",
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -83,7 +94,7 @@ export const deleteWorkThunk = createAsyncThunk<
 });
 
 export const getSingleWorkThunk = createAsyncThunk<
-  IWork,
+  TWorkSchemaType,
   { workId: string },
   { rejectValue: string }
 >("work/getWork", async ({ workId }, { rejectWithValue }) => {
@@ -99,7 +110,7 @@ export const getSingleWorkThunk = createAsyncThunk<
 
 export const updateWorkThunk = createAsyncThunk<
   IWork,
-  { workId: string; work: IWork },
+  { workId: string; work: TWorkSchemaType },
   { rejectValue: string }
 >("work/updateWork", async ({ work, workId }, { rejectWithValue }) => {
   try {

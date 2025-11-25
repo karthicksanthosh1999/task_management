@@ -45,7 +45,6 @@ type Props = {
 };
 
 const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
-
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -196,28 +195,26 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
                 )}
               />
               {/* ASSIGNED USERS */}
-              {
-                user?.role === "Admin" && (
-                  <FormField
-                    control={form.control}
-                    name="assignedUsers"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Select Frameworks</FormLabel>
-                        <FormControl>
-                          <MultiSelect
-                            options={frameworksList ?? []}
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            placeholder="Choose frameworks..."
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )
-              }
+              {user?.role === "Admin" && (
+                <FormField
+                  control={form.control}
+                  name="assignedUsers"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Select Frameworks</FormLabel>
+                      <FormControl>
+                        <MultiSelect
+                          options={frameworksList ?? []}
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder="Choose frameworks..."
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               {/* START DATE */}
               <div className=" space-y-3">
                 <FormLabel>Start Date</FormLabel>

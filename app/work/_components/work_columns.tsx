@@ -13,8 +13,8 @@ import { cn, isoDateFormat } from "@/lib/utils";
 import { useState } from "react";
 import DeleteModel from "@/components/delete-model";
 import { TWorkSchemaType } from "../schema/workSchema";
-import { useAppDispatch } from "@/app/hooks/reduxHooks";
-import { deleteWorkThunk } from "@/app/features/workSlices";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
+import { deleteWorkThunk, getSingleWorkThunk } from "@/app/features/workSlices";
 import { toast } from "sonner";
 import WorkForm from "./workForm";
 import {
@@ -173,7 +173,7 @@ export const WorkColumns: ColumnDef<IWork>[] = [
     },
   },
   {
-    accessorKey: "workStatus",
+    accessorKey: "state",
     header: "Status",
     cell: ({ row }) => (
       <p
@@ -195,13 +195,15 @@ export const WorkColumns: ColumnDef<IWork>[] = [
       const work = row.original;
       const [open, setOpen] = useState(false);
       const [formOpen, setFormOpen] = useState(false);
-      const [selectedWork, setSelectedWork] = useState<
-        TWorkSchemaType | undefined
-      >(undefined);
+
+      const { existingWork: selectedWork } = useAppSelector(
+        (state) => state.works
+      );
 
       const dispatch = useAppDispatch();
-      const handleEdit = (value: TWorkSchemaType) => {
-        setSelectedWork(value);
+
+      const handleEdit = (id: string) => {
+        getSingleWorkThunk({ workId: id });
         setFormOpen(true);
       };
 
@@ -223,7 +225,7 @@ export const WorkColumns: ColumnDef<IWork>[] = [
               <DropdownMenuItem onClick={() => setOpen(true)}>
                 Delete
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleEdit(work)}>
+              <DropdownMenuItem onClick={() => handleEdit(work?.id!)}>
                 Update
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -239,7 +241,7 @@ export const WorkColumns: ColumnDef<IWork>[] = [
           <WorkForm
             modelOpen={formOpen}
             setModelOpen={setFormOpen}
-            existingWork={selectedWork}
+            existingWork={selectedWork!}
             mode="update"
           />
         </>
