@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { errorMessage, successMessage } from "@/lib/apiHandler";
 
@@ -14,8 +13,10 @@ export async function GET() {
       ORDER BY MIN("endDate");
     `;
 
-    const categories = rows.map((r) => r.month);
-    const series = rows.map((r) => r.count);
+    const categories = rows.map(
+      (r: { month: string; count: number }) => r.month
+    );
+    const series = rows.map((r: { month: string; count: number }) => r.count);
 
     let data = {
       success: true,
