@@ -1,36 +1,169 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Task Manager — Next.js + Prisma + PostgreSQL
 
-## Getting Started
+A modern Task Manager application built with **Next.js App Router**, **Prisma**, **PostgreSQL**, **TypeScript**, and **TailwindCSS**. This README includes setup steps, environment configuration, Prisma setup, and deployment instructions.
 
-First, run the development server:
+---
+
+## 📦 Tech Stack
+
+- **Next.js (App Router)**
+- **TypeScript**
+- **Prisma ORM** (with @prisma/adapter-pg)
+- **PostgreSQL**
+- **Tailwind CSS**
+
+---
+
+## 🛠️ Project Setup
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/your-username/task-manager.git
+cd task-manager
+```
+
+### 2️⃣ Install Dependencies
+
+```bash
+npm install
+```
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the root:
+
+```
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
+```
+
+Example for local PostgreSQL:
+
+```
+DATABASE_URL="postgresql://postgres:admin@localhost:5432/task_manager?schema=public"
+```
+
+---
+
+## 🧩 Prisma Setup
+
+### 1️⃣ Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+### 2️⃣ Run Migrations
+
+```bash
+npx prisma migrate dev --name init
+```
+
+---
+
+## 🔌 Prisma Client Initialization
+
+Create file: `lib/prisma.ts`
+
+```ts
+import "dotenv/config";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@prisma/client";
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+
+export const prisma = new PrismaClient({ adapter });
+```
+
+---
+
+## 📁 Project Structure
+
+```
+├── app
+│   ├── api
+│   │   ├── tasks
+│   │   │   ├── route.ts
+│   │   └── projects
+│   ├── layout.tsx
+│   └── page.tsx
+├── prisma
+│   └── schema.prisma
+├── lib
+│   └── prisma.ts
+└── package.json
+```
+
+---
+
+## ▶️ Running the Application
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Application runs at:
+**[http://localhost:3000](http://localhost:3000)**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Deployment (Vercel + Railway/Supabase)
 
-## Learn More
+### Step 1: Host PostgreSQL
 
-To learn more about Next.js, take a look at the following resources:
+Use **Railway**, **Supabase**, or **NeonDB** → copy the DB URL.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Step 2: Add `DATABASE_URL` in Vercel Dashboard
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+DATABASE_URL=your_production_postgres_url
+```
 
-## Deploy on Vercel
+### Step 3: Push Prisma Schema
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npx prisma migrate deploy
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Step 4: Deploy to Vercel
+
+```bash
+vercel
+```
+
+---
+
+## 🧪 Testing Prisma
+
+Run a quick test inside route file:
+
+```ts
+const projects = await prisma.project.findMany();
+return NextResponse.json(projects);
+```
+
+If you receive data → Prisma setup is correct.
+
+---
+
+## 📚 Scripts
+
+```
+npm run dev       # start local dev server
+npm run build     # production build
+npm run start     # start production server
+```
+
+---
+
+## 🤝 Contributing
+
+Feel free to submit pull requests or improvements!
+
+---
+
+## 📄 License
+
+MIT License — free to use and modify.
