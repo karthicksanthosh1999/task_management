@@ -38,7 +38,7 @@ interface IProps {
   setFilteredInput: (projectFilter: TProjectFilter) => void;
 }
 
-const ProjectFilterForm = ({ open, setOpen }: IProps) => {
+const ProjectFilterForm = ({ open, setOpen, setFilteredInput }: IProps) => {
   // REDUX SECTION
   const dispatch = useAppDispatch();
 

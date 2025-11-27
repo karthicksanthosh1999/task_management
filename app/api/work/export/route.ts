@@ -1,7 +1,7 @@
 import { TExcelCell } from "@/app/types/excelRowTypes";
 import { errorMessage } from "@/lib/apiHandler";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { Status } from "@/lib/generated/prisma/enums";
-import { WorkWhereInput } from "@/lib/generated/prisma/models";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import * as XLSX from "xlsx";
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
       .split(",")
       .filter(Boolean);
 
-    const whereClass: WorkWhereInput = {};
+    const whereClass: Prisma.WorkWhereInput = {};
 
     if (status) whereClass.state = status as Status;
     if (project) whereClass.projectId = project;

@@ -1,12 +1,9 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import prisma from "@/lib/prisma"; // ✅ correct import
 
 const handler = NextAuth({
-  adapter: PrismaAdapter(prisma), // ✅ FIXED
-
   session: {
     strategy: "jwt",
   },

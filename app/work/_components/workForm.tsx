@@ -108,9 +108,9 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
       toast.success("Work update successfully...🎉");
     }
   };
-  const frameworksList = users.map((item) => ({
-    label: item.name,
-    value: item.id,
+  const frameworksList = users?.map((item) => ({
+    label: item?.name,
+    value: item?.id ?? "",
   }));
 
   return (
@@ -204,7 +204,7 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
                       <FormLabel>Select Frameworks</FormLabel>
                       <FormControl>
                         <MultiSelect
-                          options={frameworksList ?? []}
+                          options={frameworksList}
                           value={field.value}
                           onValueChange={field.onChange}
                           placeholder="Choose frameworks..."

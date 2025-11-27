@@ -24,13 +24,13 @@ const page = () => {
         }
 
     }, [])
-
-    console.log({ selectedOnlineUser })
     return (
         <div className='flex gap-3'>
             <OnlineUsers onlineUsers={onlineUsers} selectedOnlineUser={selectedOnlineUser} setSelectedOnlineUser={setSelectedOnlineUser} />
-
-            <ChatComponent selectedUser={selectedOnlineUser} />
+            {
+                selectedOnlineUser &&
+                <ChatComponent selectedUser={selectedOnlineUser} />
+            }
 
         </div>
     )

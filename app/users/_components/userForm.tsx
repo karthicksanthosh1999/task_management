@@ -17,19 +17,25 @@ import { IUser } from "@/app/types/userTypes";
 import { useAppDispatch } from "@/app/hooks/reduxHooks";
 import { addUserThunk, updateUserThunk } from "@/app/features/userSlices";
 import { toast } from "sonner";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useEffect } from "react";
 import { roles } from "@/lib/generated/prisma/enums";
 
 interface IProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  existingUser?: IUser,
-  mode: "Create" | "Update"
+  existingUser?: IUser;
+  mode: "Create" | "Update";
 }
 
 const UserForm = ({ open, setOpen, mode, existingUser }: IProps) => {
-
   const dispatch = useAppDispatch();
 
   const form = useForm({
@@ -44,17 +50,16 @@ const UserForm = ({ open, setOpen, mode, existingUser }: IProps) => {
         mobile: existingUser?.mobile,
         name: existingUser?.name,
         role: existingUser?.role as roles,
-      })
+      });
     }
-  }, [form, existingUser])
-
+  }, [form, existingUser]);
 
   const handleUserSubmit = async (userData: IUser) => {
     if (mode === "Create") {
       try {
         await dispatch(addUserThunk(userData)).unwrap();
         toast.success("User added successfully ✅");
-        setOpen(false)
+        setOpen(false);
       } catch (error) {
         toast.error(error instanceof Error ? error.message : String(error));
       }
@@ -94,24 +99,22 @@ const UserForm = ({ open, setOpen, mode, existingUser }: IProps) => {
               )}
             />
             {/* PASSWORD INPUT */}
-            {
-              mode === "Create" && (
-                <FormField
-                  name="password"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <Input
-                        placeholder="Enter password"
-                        {...field}
-                        type="password"
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )
-            }
+            {mode === "Create" && (
+              <FormField
+                name="password"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Input
+                      placeholder="Enter password"
+                      {...field}
+                      type="password"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             {/* MOBILE INPUT */}
             <FormField
               name="mobile"
@@ -170,7 +173,11 @@ const UserForm = ({ open, setOpen, mode, existingUser }: IProps) => {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <Input placeholder="Enter company name" {...field} type="text" />
+                  <Input
+                    placeholder="Enter company name"
+                    {...field}
+                    type="text"
+                  />
                   <FormMessage />
                 </FormItem>
               )}

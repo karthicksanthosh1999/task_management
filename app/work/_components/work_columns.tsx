@@ -95,7 +95,7 @@ export const WorkColumns: ColumnDef<IWork>[] = [
       const { data: session } = useSession();
       const loggedUser = session?.user;
       const { assignedUsers, user } = row.original;
-      return loggedUser?.email === user?.email && assignedUsers.length === 0 ? (
+      return loggedUser?.email === user?.email && assignedUsers?.length === 0 ? (
         <></>
       ) : (
         <Dialog>

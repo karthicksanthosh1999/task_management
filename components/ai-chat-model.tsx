@@ -34,17 +34,17 @@ export default function AiChatDialog({ aiModelOpen, setAiModelOpen, description 
     if (!input.trim()) return;
 
     // add user message
-    setMessages((prev) => [...prev, { role: "user", content: input }]);
+    // setMessages((prev) => [...prev, { role: "user", content: input }]);
 
     // clear input
     setInput("");
 
     // simulate AI response (replace later with real API)
     setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "This is an AI response." },
-      ]);
+      // setMessages((prev) => [
+      //   ...prev,
+      //   { role: "assistant", content: "This is an AI response." },
+      // ]);
     }, 600);
   };
 
