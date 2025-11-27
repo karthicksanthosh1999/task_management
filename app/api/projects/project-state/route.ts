@@ -10,8 +10,13 @@ export async function GET() {
       ORDER BY state ASC;
     `;
 
-    const labels = result.map((item) => item.state);
-    const series = result.map((item) => item.count);
+    const labels = result.map(
+      (item: { state: string; count: number }) => item.state
+    );
+    const series = result.map(
+      (item: { state: string; count: number }) => item.count
+    );
+
     let data = { labels, series };
     return successMessage(200, data);
   } catch (error) {
