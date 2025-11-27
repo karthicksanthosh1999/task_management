@@ -1,6 +1,6 @@
 import { workSchema } from "@/app/work/schema/workSchema";
 import { errorMessage, successMessage, warningMessage } from "@/lib/apiHandler";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {

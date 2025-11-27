@@ -1,6 +1,6 @@
 import { projectValidationSchema } from "@/app/projects/schema/projectSchema";
 import { errorMessage, successMessage, warningMessage } from "@/lib/apiHandler";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -52,21 +52,24 @@ export async function GET(req: NextRequest) {
     const project = await prisma.project.findUnique({ where: { id } });
     return successMessage(200, project, "User deleted successfully");
   } catch (error) {
-    return errorMessage(error instanceof Error ? error.message : String(error), 500);
+    return errorMessage(
+      error instanceof Error ? error.message : String(error),
+      500
+    );
   }
 }
 
 export async function PUT(req: NextRequest) {
   try {
-    const projectJsonData = await req.json()
+    const projectJsonData = await req.json();
     const { searchParams } = req.nextUrl;
 
-    const parsedData = projectValidationSchema.safeParse(projectJsonData)
+    const parsedData = projectValidationSchema.safeParse(projectJsonData);
 
     const id = searchParams.get("id") || "";
 
     if (!parsedData.success) {
-      return warningMessage("Please fill the all fields", 400)
+      return warningMessage("Please fill the all fields", 400);
     }
 
     const { endDate, startDate, state, title, userId } = parsedData.data;
@@ -77,11 +80,18 @@ export async function PUT(req: NextRequest) {
     const project = await prisma.project.update({
       where: { id },
       data: {
-        endDate, startDate, state, title, userId
-      }
-    })
+        endDate,
+        startDate,
+        state,
+        title,
+        userId,
+      },
+    });
     return successMessage(200, project, "Project updated successfully");
   } catch (error) {
-    return errorMessage(error instanceof Error ? error.message : String(error), 500);
+    return errorMessage(
+      error instanceof Error ? error.message : String(error),
+      500
+    );
   }
 }

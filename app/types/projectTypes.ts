@@ -1,5 +1,5 @@
 import { IUser } from "@/app/types/userTypes";
-import { Status } from "@/lib/generated/prisma/enums";
+import { Status } from "@/lib/generated/prisma";
 
 export interface IProject {
   id?: string;

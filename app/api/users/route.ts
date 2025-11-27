@@ -3,7 +3,7 @@ import {
   userSchema,
 } from "@/app/users/schema/userSchema";
 import { errorMessage, successMessage, warningMessage } from "@/lib/apiHandler";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 import { Prisma, roles } from "@/lib/generated/prisma/client";

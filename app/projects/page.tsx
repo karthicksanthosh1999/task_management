@@ -10,7 +10,7 @@ import AiChartModel from "@/components/ai-chat-model";
 import { fetchProjectsThunk } from "../features/projectSlices";
 import { useSession } from "next-auth/react";
 import { TProjectFilter } from "../types/projectTypes";
-import { Status } from "@/lib/generated/prisma/enums";
+import { Status } from "@/lib/generated/prisma";
 
 const page = () => {
   const { data: session } = useSession();

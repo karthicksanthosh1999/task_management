@@ -1,8 +1,8 @@
 import { TExcelCell } from "@/app/types/excelRowTypes";
 import { errorMessage } from "@/lib/apiHandler";
 import { Prisma } from "@/lib/generated/prisma/client";
-import { Status } from "@/lib/generated/prisma/enums";
-import prisma from "@/lib/prisma";
+import { Status } from "@/lib/generated/prisma";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 

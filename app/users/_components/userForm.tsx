@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect } from "react";
-import { roles } from "@/lib/generated/prisma/enums";
+import { roles } from "@/lib/generated/prisma";
 
 interface IProps {
   open: boolean;

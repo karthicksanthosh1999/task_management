@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
-import prisma from "@/lib/prisma"; // ✅ correct import
+import { prisma } from "@/lib/prisma"; // ✅ correct import
 
 const handler = NextAuth({
   session: {
