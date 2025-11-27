@@ -5,6 +5,7 @@ import { Status } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import * as XLSX from "xlsx";
+import { IWorkFilter } from "@/app/types/workTypes";
 
 export async function GET(req: NextRequest) {
   try {
@@ -53,7 +54,7 @@ export async function GET(req: NextRequest) {
       include: { project: true, user: true },
     });
 
-    const filteredWork: TExcelRow[] = work.map((item) => {
+    const filteredWork: TExcelRow[] = work.map((item: IWorkFilter) => {
       const row: TExcelRow = {};
 
       fields.forEach((f) => {
