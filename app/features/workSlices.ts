@@ -123,6 +123,21 @@ export const updateWorkThunk = createAsyncThunk<
   }
 });
 
+export const updateStatusWorkThunk = createAsyncThunk<
+  IWork,
+  { id: string, status: string },
+  { rejectValue: string }
+>("work_status/update", async ({ id, status }, { rejectWithValue }) => {
+  try {
+    const response = await axios.put<IResponseType<IWork>>(`/api/work/${id}`, { status });
+    return response.data?.data!
+  } catch (error) {
+    return rejectWithValue(
+      error instanceof Error ? error.message : String(error)
+    )
+  }
+})
+
 export const workSlices = createSlice({
   name: "work",
   initialState,
@@ -139,8 +154,22 @@ export const workSlices = createSlice({
       })
       .addCase(fetchWorkThunk.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload ?? "Failed to fetch projects";
+        state.error = action.payload ?? "Failed to fetch works";
       });
+    builder
+      .addCase(updateStatusWorkThunk.fulfilled, (state, action) => {
+        const index = state.works.findIndex(work => work.id === action.payload.id);
+        if (index !== -1) {
+          state.works[index] = action.payload
+        }
+
+        if (state.work && state.work.id === action.payload.id) {
+          state.work = action.payload;
+        }
+      })
+      .addCase(updateStatusWorkThunk.rejected, (state, action) => {
+        state.error = action.payload ?? "Failed to update work";
+      })
     // ADD
     builder
       .addCase(createWorkThunk.fulfilled, (state, action) => {
@@ -155,7 +184,7 @@ export const workSlices = createSlice({
         state.works = state.works.filter((u) => u.id !== action.payload.id);
       })
       .addCase(deleteWorkThunk.rejected, (state, action) => {
-        state.error = action.payload ?? "Failed to delete project";
+        state.error = action.payload ?? "Failed to delete work";
       });
 
     builder
@@ -164,13 +193,13 @@ export const workSlices = createSlice({
         state.work = found ?? null;
       })
       .addCase(getSingleWorkThunk.rejected, (state, action) => {
-        state.error = action.payload ?? "Failed to fetch project";
+        state.error = action.payload ?? "Failed to fetch work";
       })
 
       .addCase(updateWorkThunk.fulfilled, (state, action) => {
         const index = state.works.findIndex((p) => p.id === action.payload.id);
         if (index !== -1) {
-          state.works[index] = action.payload; // replace updated project
+          state.works[index] = action.payload; // replace updated work
         }
 
         // also update single project if selected
@@ -187,7 +216,7 @@ export const workSlices = createSlice({
       })
       .addCase(updateWorkThunk.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload ?? "Failed to update project";
+        state.error = action.payload ?? "Failed to update work";
       });
   },
 });

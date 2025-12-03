@@ -33,13 +33,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { MultiSelect, MultiSelectOption } from "@/components/multi-select";
-import { fetchUsersThunk } from "@/app/features/userSlices";
+import { MultiSelect } from "@/components/multi-select";
 import { useSession } from "next-auth/react";
+import { IWork } from "@/app/types/workTypes";
+import { useUserFilterUseQuery } from "@/app/users/_hooks/userHooks";
 
 type Props = {
   mode?: "create" | "update";
-  existingWork?: TWorkSchemaType;
+  existingWork?: IWork;
   modelOpen: boolean;
   setModelOpen: (open: boolean) => void;
 };
@@ -49,13 +50,14 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
   const user = session?.user;
 
   const { projects: projectList } = useAppSelector((state) => state.projects);
-  const { users } = useAppSelector((state) => state.users);
-
   const dispatch = useAppDispatch();
 
+  //HOOKS
+  const { data: usersList, refetch } = useUserFilterUseQuery("Employee", "")
+
   useEffect(() => {
+    refetch()
     dispatch(fetchProjectsThunk({}));
-    dispatch(fetchUsersThunk({ role: "Employee", search: "" }));
   }, [dispatch]);
 
   useEffect(() => {
@@ -108,7 +110,8 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
       toast.success("Work update successfully...🎉");
     }
   };
-  const frameworksList = users?.map((item) => ({
+
+  const frameworksList = usersList && usersList?.map((item) => ({
     label: item?.name,
     value: item?.id ?? "",
   }));
@@ -204,7 +207,7 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
                       <FormLabel>Select Frameworks</FormLabel>
                       <FormControl>
                         <MultiSelect
-                          options={frameworksList}
+                          options={frameworksList!}
                           value={field.value}
                           onValueChange={field.onChange}
                           placeholder="Choose frameworks..."

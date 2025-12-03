@@ -1,5 +1,5 @@
 "use client";
-import BarChart from "@/components/charts/ColumnBarChart";
+// import BarChart from "@/components/charts/ColumnBarChart";
 import DonutChart from "@/components/charts/DonetChart";
 import WorkStatusLineChart from "@/components/charts/LineChart";
 import {
@@ -87,10 +87,10 @@ const ProjectsStatusCard = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
         {/* Project Status */}
-        <div>
-          <Card className="h-[450px]">
+        <div className="w-full">
+          <Card className="md:h-[450px] h-auto ">
             <CardContent>
               <CardHeader>
                 <CardTitle>Project Status</CardTitle>
@@ -111,7 +111,7 @@ const ProjectsStatusCard = () => {
         </div>
 
         {/* Completed Tasks (Bar Chart) */}
-        <div>
+        {/* <div>
           <Card className="h-[450px]">
             <CardContent>
               <CardHeader>
@@ -131,10 +131,10 @@ const ProjectsStatusCard = () => {
               )}
             </CardContent>
           </Card>
-        </div>
+        </div> */}
 
         {/* Work Status Line Chart (big one) */}
-        <div className="lg:col-span-2 col-span-1">
+        <div className="lg:col-span-3 col-span-1 w-full">
           <Card className="h-[450px]">
             <CardContent>
               <CardHeader>

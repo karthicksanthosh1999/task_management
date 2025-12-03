@@ -7,13 +7,13 @@ import TodayWorkSuggestionBox from "./_components/TodayWorkSuggestionBox";
 export default function Page() {
   return (
     <>
-      <div>
+      <div className="p-2">
         <SectionCards />
       </div>
-      <div className="py-5 w-full">
+      <div className="p-2">
         <TodayWorkSuggestionBox />
       </div>
-      <div className="p-6">
+      <div className="p-2">
         <ProjectsStatusCard />
       </div>
 

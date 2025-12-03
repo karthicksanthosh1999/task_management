@@ -1,32 +1,16 @@
-import { fetchProjectsThunk } from "@/app/features/projectSlices";
-import { useAppDispatch } from "@/app/hooks/reduxHooks";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 interface IProps {
   setOpen: (open: boolean) => void;
   setFilterOpen: (open: boolean) => void;
   setAiModelOpen: (open: boolean) => void;
+  setInputs: (search: string) => void
+  search: string
 }
 
-const ProjectHeader = ({ setOpen, setFilterOpen, setAiModelOpen }: IProps) => {
-
-  const [search, setSearch] = useState<string>("");
-  const dispatch = useAppDispatch();
-
-  // Debounce search input
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      dispatch(
-        fetchProjectsThunk({ search })
-      );
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, [search, dispatch]);
+const ProjectHeader = ({ search, setOpen, setFilterOpen, setAiModelOpen, setInputs }: IProps) => {
 
   return (
     <div className="flex items-center justify-between py-2">
@@ -36,7 +20,7 @@ const ProjectHeader = ({ setOpen, setFilterOpen, setAiModelOpen }: IProps) => {
         placeholder="Search Project"
         className="w-sm"
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => setInputs(e.target.value)}
       />
       <div className="flex items-center gap-3">
         <Button

@@ -1,11 +1,10 @@
 import { TExcelCell } from "@/app/types/excelRowTypes";
 import { errorMessage } from "@/lib/apiHandler";
-import { Prisma } from "@/lib/generated/prisma/client";
 import { Status } from "@/lib/generated/prisma";
-import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/lib/generated/prisma";
+import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import * as XLSX from "xlsx";
-import { IWorkFilter } from "@/app/types/workTypes";
 
 export async function GET(req: NextRequest) {
   try {
@@ -54,7 +53,7 @@ export async function GET(req: NextRequest) {
       include: { project: true, user: true },
     });
 
-    const filteredWork: TExcelRow[] = work.map((item: IWorkFilter) => {
+    const filteredWork: TExcelRow[] = work.map((item) => {
       const row: TExcelRow = {};
 
       fields.forEach((f) => {

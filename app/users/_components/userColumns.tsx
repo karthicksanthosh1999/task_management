@@ -1,6 +1,4 @@
 "use client";
-import { deleteUserThunk, fetchSingleUserThunk } from "@/app/features/userSlices";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
 import { IUser } from "@/app/types/userTypes";
 import DeleteModel from "@/components/delete-model";
 import { Button } from "@/components/ui/button";
@@ -8,9 +6,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { toast } from "sonner";
 import UserForm from "./userForm";
-import { useSession } from "next-auth/react";
 import { isoDateFormat } from "@/lib/utils";
 import UserActivityModel from "./userActivityModel";
+import { useSingleUserFetchHook, useUserDeleteHook } from "../_hooks/userHooks";
 
 export const UserColumns: ColumnDef<IUser>[] = [
   {
@@ -45,19 +43,19 @@ export const UserColumns: ColumnDef<IUser>[] = [
     cell: ({ row }) => {
       const { id } = row.original;
 
-      // REDUX SECTION
-      const dispatch = useAppDispatch();
-      const { user } = useAppSelector(state => state.users)
-
       // STATES SECTION
       const [updateModelOpen, setUpdateModelOpen] = useState(false)
       const [open, setOpen] = useState(false);
       const [openActivity, setOpenActivity] = useState(false)
 
+      // HOOKS
+      const { data: fetchSingleUserData, mutate: fetchSingleUserMutation } = useSingleUserFetchHook();
+      const { mutate: userDeleteMutation } = useUserDeleteHook();
+
       const fetchUpdatingUser = (id: string) => {
         try {
-          dispatch(fetchSingleUserThunk({ id })).unwrap()
           setUpdateModelOpen(true)
+          fetchSingleUserMutation({ id })
         } catch (error) {
           console.log(error)
         }
@@ -66,8 +64,8 @@ export const UserColumns: ColumnDef<IUser>[] = [
       const handleDelete = async () => {
         try {
           if (id) {
-            await dispatch(deleteUserThunk({ userId: id })).unwrap();
-            toast.success("User Deleted Successfully...👍");
+            userDeleteMutation({ id })
+            setOpen(false)
           }
         } catch (error) {
           toast.error("Something went wrong...❌");
@@ -105,7 +103,7 @@ export const UserColumns: ColumnDef<IUser>[] = [
           <UserForm
             open={updateModelOpen}
             setOpen={setUpdateModelOpen}
-            existingUser={user!}
+            existingUser={fetchSingleUserData!}
             mode="Update"
           />
 
@@ -120,7 +118,7 @@ export const UserColumns: ColumnDef<IUser>[] = [
           />
           {/* USER ACTIVITY MODEL */}
 
-          <UserActivityModel open={openActivity} setOpen={setOpenActivity} userId={user?.id!} />
+          <UserActivityModel open={openActivity} setOpen={setOpenActivity} userId={fetchSingleUserData?.id!} />
         </div>
       );
     },

@@ -190,7 +190,6 @@ const ProjectForm = ({ open, setOpen, mode, updateProject }: IProps) => {
                 )}
               />
             </div>
-
             <DialogFooter>
               <Button
                 className="cursor-pointer"

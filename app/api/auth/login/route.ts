@@ -1,6 +1,6 @@
 import { userValidationSchema } from "@/app/login/schema/loginValidationSchema";
 import { errorMessage, successMessage } from "@/lib/apiHandler";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";

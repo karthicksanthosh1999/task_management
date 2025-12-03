@@ -1,6 +1,6 @@
 import { workSchema } from "@/app/work/schema/workSchema";
 import { errorMessage, successMessage, warningMessage } from "@/lib/apiHandler";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -62,7 +62,6 @@ export async function PUT(req: NextRequest) {
     if (!parsedWork.success) {
       return warningMessage("Please fill the all fields");
     }
-    console.log(id, parsedWork.data);
     const { endDate, projectId, startDate, state, title, userId } =
       parsedWork.data;
 
@@ -81,5 +80,21 @@ export async function PUT(req: NextRequest) {
     return successMessage(201, work, "Work updated successfully");
   } catch (error) {
     return errorMessage("Internal Server error", 500, String(error));
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = req.nextUrl;
+    const id = searchParams.get('id') || "";
+    if (!id) {
+      return warningMessage("Provide the id", 400)
+    }
+    const response = await prisma.work.findUnique({
+      where: { id }
+    })
+    return successMessage(200, response, "Fetch work successfully")
+  } catch (error) {
+    return errorMessage("Internal server error", 500)
   }
 }

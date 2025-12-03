@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
     // fetch user from DB if needed
     const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
+      where: { id: decoded.id }
     });
 
     return NextResponse.json({ user });

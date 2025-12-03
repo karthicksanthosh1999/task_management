@@ -3,6 +3,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { ModeToggle } from "./theme-toggle"
 import UserProfile from "./user-profile"
 import { usePathname } from "next/navigation"
+import AiStatusButton from "./ai-status"
 
 export function SiteHeader() {
 
@@ -18,6 +19,7 @@ export function SiteHeader() {
         />
         <h1 className="text-base font-medium">{pathName.slice(1).toUpperCase() ?? "Unknown"}</h1>
         <div className="ml-auto flex items-center gap-2">
+          <AiStatusButton />
           <ModeToggle />
           <UserProfile />
         </div>

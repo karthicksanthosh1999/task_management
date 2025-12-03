@@ -37,9 +37,10 @@ type TProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   mode?: "Export" | "Filter";
+  setIsFilterIsApply: (yes: boolean) => void;
 };
 
-const WorkExport = ({ open, setOpen, mode }: TProps) => {
+const WorkExport = ({ open, setOpen, mode, setIsFilterIsApply }: TProps) => {
   // REDUX SECTION
   const { projects: projectList } = useAppSelector((state) => state.projects);
   const dispatch = useAppDispatch();
@@ -84,6 +85,7 @@ const WorkExport = ({ open, setOpen, mode }: TProps) => {
 
   const handleFilter = (values: IWorkFilter) => {
     dispatch(fetchWorkThunk(values));
+    setIsFilterIsApply(true)
     setOpen(false);
   };
 

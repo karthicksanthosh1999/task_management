@@ -10,37 +10,32 @@ import {
 import { FormField, FormItem, FormMessage, Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { userSchema } from "../schema/userSchema";
+import { updateUserValidationSchema, userSchema } from "../schema/userSchema";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { IUser } from "@/app/types/userTypes";
-import { useAppDispatch } from "@/app/hooks/reduxHooks";
-import { addUserThunk, updateUserThunk } from "@/app/features/userSlices";
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useEffect } from "react";
 import { roles } from "@/lib/generated/prisma";
+import { useUserCreateHook, useUserUpdateHook } from "../_hooks/userHooks";
 
 interface IProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  existingUser?: IUser;
-  mode: "Create" | "Update";
+  existingUser?: IUser,
+  mode: "Create" | "Update"
 }
 
 const UserForm = ({ open, setOpen, mode, existingUser }: IProps) => {
-  const dispatch = useAppDispatch();
-
   const form = useForm({
-    resolver: zodResolver(userSchema),
+    resolver: zodResolver(mode === "Create" ? userSchema : updateUserValidationSchema),
   });
+
+
+  // HOOKS
+  const { mutate: updateUpdateMutation } = useUserUpdateHook()
+  const { mutate: userCreateMutation } = useUserCreateHook();
 
   useEffect(() => {
     if (existingUser) {
@@ -50,23 +45,25 @@ const UserForm = ({ open, setOpen, mode, existingUser }: IProps) => {
         mobile: existingUser?.mobile,
         name: existingUser?.name,
         role: existingUser?.role as roles,
-      });
+        id: existingUser?.id
+      })
     }
-  }, [form, existingUser]);
+  }, [form, existingUser])
 
   const handleUserSubmit = async (userData: IUser) => {
     if (mode === "Create") {
       try {
-        await dispatch(addUserThunk(userData)).unwrap();
-        toast.success("User added successfully ✅");
-        setOpen(false);
+        userCreateMutation(userData)
+        toast.warning('User Creating...', { id: 'create_user' })
+        setOpen(false)
       } catch (error) {
         toast.error(error instanceof Error ? error.message : String(error));
       }
     } else {
       try {
-        await dispatch(updateUserThunk(userData));
-        toast.success("User updated successfully ✅");
+        updateUpdateMutation(userData)
+        toast.warning('User Updating...', { id: 'update_user' })
+        setOpen(false)
       } catch (error) {
         toast.error(error instanceof Error ? error.message : String(error));
       }
@@ -99,22 +96,24 @@ const UserForm = ({ open, setOpen, mode, existingUser }: IProps) => {
               )}
             />
             {/* PASSWORD INPUT */}
-            {mode === "Create" && (
-              <FormField
-                name="password"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <Input
-                      placeholder="Enter password"
-                      {...field}
-                      type="password"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            {
+              mode === "Create" && (
+                <FormField
+                  name="password"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <Input
+                        placeholder="Enter password"
+                        {...field}
+                        type="password"
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )
+            }
             {/* MOBILE INPUT */}
             <FormField
               name="mobile"
@@ -173,11 +172,7 @@ const UserForm = ({ open, setOpen, mode, existingUser }: IProps) => {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <Input
-                    placeholder="Enter company name"
-                    {...field}
-                    type="text"
-                  />
+                  <Input placeholder="Enter company name" {...field} type="text" />
                   <FormMessage />
                 </FormItem>
               )}
@@ -187,7 +182,7 @@ const UserForm = ({ open, setOpen, mode, existingUser }: IProps) => {
                 className="cursor-pointer"
                 variant={"default"}
                 type="submit">
-                Create
+                {mode === 'Create' ? "Create" : "Update"}
               </Button>
               <Button
                 className="cursor-pointer"

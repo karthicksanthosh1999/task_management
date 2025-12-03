@@ -9,12 +9,11 @@ import {
 import { MessageCircle, MoreHorizontal, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IWork } from "@/app/types/workTypes";
-import { cn, isoDateFormat } from "@/lib/utils";
+import { isoDateFormat } from "@/lib/utils";
 import { useState } from "react";
 import DeleteModel from "@/components/delete-model";
-import { TWorkSchemaType } from "../schema/workSchema";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
-import { deleteWorkThunk, getSingleWorkThunk } from "@/app/features/workSlices";
+import { deleteWorkThunk, getSingleWorkThunk, updateStatusWorkThunk } from "@/app/features/workSlices";
 import { toast } from "sonner";
 import WorkForm from "./workForm";
 import {
@@ -38,7 +37,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
 import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export const WorkColumns: ColumnDef<IWork>[] = [
   {
@@ -48,14 +55,17 @@ export const WorkColumns: ColumnDef<IWork>[] = [
       const [open, setOpen] = useState(false);
       return (
         <>
-          <h1 className={`w-[300px] truncate`}>
-            {row.original.title}
-            <span
+          <div className="flex items-center">
+            <h1 className={`w-full max-w-xs truncate`}>
+              {row.original.title}
+            </h1>
+            <Button
+              variant={'link'}
               className="text-blue-600 cursor-pointer"
               onClick={() => setOpen(true)}>
-              ...Read
-            </span>
-          </h1>
+              Read
+            </Button>
+          </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
@@ -175,17 +185,40 @@ export const WorkColumns: ColumnDef<IWork>[] = [
   {
     accessorKey: "state",
     header: "Status",
-    cell: ({ row }) => (
-      <p
-        className={`${cn(
-          row.original?.state === "Planning" ? "text-blue-400 " : "",
-          row.original?.state === "Completed" ? "text-green-400 " : "",
-          row.original?.state === "Progress" ? "text-orange-400 " : "",
-          row.original?.state === "Pending" ? "text-violet-600" : ""
-        )} p-2 rounded-lg w-fit text-xs font-medium`}>
-        {row.original.state.toUpperCase()}
-      </p>
-    ),
+    cell: ({ row }) => {
+      const dispatch = useAppDispatch();
+      const work = row.original;
+      const updateWorkStatus = (id: string, status: string) => {
+        console.log(id, status)
+        dispatch(updateStatusWorkThunk({ id, status }))
+      }
+      return (
+        <>
+          <Select
+            defaultValue={row.original.state}
+            onValueChange={(value) => updateWorkStatus(work?.id!, value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue
+                placeholder={row.original.state}
+                className={`p-2 rounded-lg w-fit text-xs font-medium`}>
+                {row.original.state.toUpperCase()}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {
+                  ['Planning', "Completed", "Progress", "Pending"].map((item) => (
+
+                    <SelectItem value={item} >{item}</SelectItem>
+                  ))
+                }
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </>
+      )
+    },
   },
   {
     id: "actions",
@@ -196,14 +229,13 @@ export const WorkColumns: ColumnDef<IWork>[] = [
       const [open, setOpen] = useState(false);
       const [formOpen, setFormOpen] = useState(false);
 
-      const { existingWork: selectedWork } = useAppSelector(
+      const { work: selectedWork } = useAppSelector(
         (state) => state.works
       );
-
       const dispatch = useAppDispatch();
 
       const handleEdit = (id: string) => {
-        getSingleWorkThunk({ workId: id });
+        dispatch(getSingleWorkThunk({ workId: id }));
         setFormOpen(true);
       };
 

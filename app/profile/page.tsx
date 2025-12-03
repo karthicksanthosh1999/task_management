@@ -24,9 +24,10 @@ import { useSession } from "next-auth/react";
 
 const page = () => {
   const [isEdit, setIsEdit] = useState(false);
-
   const { data: session } = useSession();
+
   const user = session?.user;
+
   const dispatch = useAppDispatch();
 
   const form = useForm({
@@ -145,7 +146,7 @@ const page = () => {
               </div>
             </CardContent>
             <Separator />
-            <CardFooter>
+            <CardFooter className="space-x-2">
               {/* <CardAction className="space-x-2"> */}
               <Button
                 variant={"outline"}

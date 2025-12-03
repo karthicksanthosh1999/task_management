@@ -19,10 +19,11 @@ type TProps = {
     onlineUsers: IUser[],
     selectedOnlineUser: IUser | null,
     setSelectedOnlineUser: (user: IUser) => void
+    setSelectAiChat: (open: boolean) => void
 }
 
 
-const OnlineUsers = ({ onlineUsers, selectedOnlineUser, setSelectedOnlineUser }: TProps) => {
+const OnlineUsers = ({ onlineUsers, selectedOnlineUser, setSelectedOnlineUser, setSelectAiChat }: TProps) => {
     return (
         <Card className="flex w-full max-w-lg flex-col gap-6">
             <CardContent>
@@ -32,7 +33,7 @@ const OnlineUsers = ({ onlineUsers, selectedOnlineUser, setSelectedOnlineUser }:
                 </CardHeader>
                 <div className="space-y-3 h-full">
 
-                    <Item variant="outline" className={"cursor-pointer"}>
+                    <Item variant="outline" className={"cursor-pointer"} onClick={() => setSelectAiChat(true)}>
                         <ItemMedia>
                             <Avatar className="size-10">
                                 <AvatarImage src="https://github.com/evilrabbit.png" />

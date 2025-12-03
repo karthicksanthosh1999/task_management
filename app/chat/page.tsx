@@ -5,6 +5,7 @@ import ChatComponent from './_components/ChatComponent'
 import OnlineUsers from './_components/OnlineUsers'
 import { IUser } from '../types/userTypes'
 import { socket } from "@/lib/server";
+import AiChatComponent from './_components/AiChatComponent'
 
 
 const page = () => {
@@ -13,6 +14,7 @@ const page = () => {
 
     const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
     const [selectedOnlineUser, setSelectedOnlineUser] = useState<IUser | null>(null)
+    const [selectAiChat, setSelectAiChat] = useState<boolean>(false)
 
     useEffect(() => {
         socket.on("online-users", (users: IUser[]) => {
@@ -26,12 +28,15 @@ const page = () => {
     }, [])
     return (
         <div className='flex gap-3'>
-            <OnlineUsers onlineUsers={onlineUsers} selectedOnlineUser={selectedOnlineUser} setSelectedOnlineUser={setSelectedOnlineUser} />
+            <OnlineUsers onlineUsers={onlineUsers} selectedOnlineUser={selectedOnlineUser} setSelectedOnlineUser={setSelectedOnlineUser} setSelectAiChat={setSelectAiChat} />
             {
                 selectedOnlineUser &&
                 <ChatComponent selectedUser={selectedOnlineUser} />
             }
-
+            {
+                selectAiChat &&
+                <AiChatComponent />
+            }
         </div>
     )
 }
