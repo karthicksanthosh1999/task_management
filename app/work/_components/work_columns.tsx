@@ -46,6 +46,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useDeleteWorkHook, useSingleWorkHook, useUpdateStatusOfTheWorkHook } from "../_hooks/worktHooks";
 
 export const WorkColumns: ColumnDef<IWork>[] = [
   {
@@ -106,7 +107,9 @@ export const WorkColumns: ColumnDef<IWork>[] = [
       const loggedUser = session?.user;
       const { assignedUsers, user } = row.original;
       return loggedUser?.email === user?.email && assignedUsers?.length === 0 ? (
-        <></>
+        <>
+          <h1>Not Assigned</h1>
+        </>
       ) : (
         <Dialog>
           <DialogTrigger asChild>
@@ -186,12 +189,15 @@ export const WorkColumns: ColumnDef<IWork>[] = [
     accessorKey: "state",
     header: "Status",
     cell: ({ row }) => {
-      const dispatch = useAppDispatch();
       const work = row.original;
+
+      const { mutate } = useUpdateStatusOfTheWorkHook();
+
       const updateWorkStatus = (id: string, status: string) => {
-        console.log(id, status)
-        dispatch(updateStatusWorkThunk({ id, status }))
+        toast.loading("Status Changing is Loading...", { id: 'updateWork' })
+        mutate({ id, status })
       }
+
       return (
         <>
           <Select
@@ -210,7 +216,7 @@ export const WorkColumns: ColumnDef<IWork>[] = [
                 {
                   ['Planning', "Completed", "Progress", "Pending"].map((item) => (
 
-                    <SelectItem value={item} >{item}</SelectItem>
+                    <SelectItem value={item} key={item} >{item}</SelectItem>
                   ))
                 }
               </SelectGroup>
@@ -229,19 +235,17 @@ export const WorkColumns: ColumnDef<IWork>[] = [
       const [open, setOpen] = useState(false);
       const [formOpen, setFormOpen] = useState(false);
 
-      const { work: selectedWork } = useAppSelector(
-        (state) => state.works
-      );
-      const dispatch = useAppDispatch();
+      // HOOKS
+      const { mutate: deleteWorkMutation } = useDeleteWorkHook();
+      const { mutate: getSingleWorkMutation, data: selectedWork } = useSingleWorkHook();
 
       const handleEdit = (id: string) => {
-        dispatch(getSingleWorkThunk({ workId: id }));
+        getSingleWorkMutation({ id })
         setFormOpen(true);
       };
 
       const handleDelete = (id: string) => {
-        dispatch(deleteWorkThunk({ workId: id }));
-        toast.success("Work deleted successfully...🗑️");
+        deleteWorkMutation({ id })
         setOpen(false);
       };
       return (

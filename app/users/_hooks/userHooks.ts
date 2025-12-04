@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 import { IUser } from "@/app/types/userTypes";
 
-// ✅ FETCH USERS
+// FETCH USERS
 export const useUserFilterUseQuery = (search: string, role: string) => {
     return useQuery<IUser[]>({
         queryKey: ['fetchUsers', search, role],
@@ -11,10 +11,11 @@ export const useUserFilterUseQuery = (search: string, role: string) => {
             const { data } = await axios.get(`/api/users?search=${search}&role=${role}`);
             return data?.data;
         },
+        staleTime: 1000 * 50 * 5
     });
 };
 
-// GET SINGLE USER
+//  GET SINGLE USER
 export const useSingleUserFetchHook = () => {
     const queryClient = useQueryClient();
     return useMutation<IUser, AxiosError, { id: string }>({
@@ -33,7 +34,7 @@ export const useSingleUserFetchHook = () => {
     })
 }
 
-// ✅ ADD USER
+// ADD USER
 export const useUserCreateHook = () => {
     const queryClient = useQueryClient();
     return useMutation<IUser, AxiosError, IUser>({
@@ -55,7 +56,7 @@ export const useUserCreateHook = () => {
     })
 }
 
-// ✅ DELETE USER
+// DELETE USER
 export const useUserDeleteHook = () => {
     const queryClient = useQueryClient();
     return useMutation<IUser, AxiosError, { id: string }>({

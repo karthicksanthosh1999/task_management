@@ -26,28 +26,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
-import { useEffect } from "react";
-import { fetchProjectsThunk } from "@/app/features/projectSlices";
 import { IWorkFilter } from "@/app/types/workTypes";
-import { fetchWorkThunk } from "@/app/features/workSlices";
+import { useFetchProjectHooks } from "@/app/projects/_hooks/projectHooks";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 type TProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   mode?: "Export" | "Filter";
-  setIsFilterIsApply: (yes: boolean) => void;
+  display: (values: IWorkFilter) => void;
 };
 
-const WorkExport = ({ open, setOpen, mode, setIsFilterIsApply }: TProps) => {
-  // REDUX SECTION
-  const { projects: projectList } = useAppSelector((state) => state.projects);
-  const dispatch = useAppDispatch();
+const WorkExport = ({ open, setOpen, mode, display }: TProps) => {
+  // STORED USERS
+  const { data: session } = useSession();
+  const user = session?.user;
 
-  useEffect(() => {
-    dispatch(fetchProjectsThunk({}));
-  }, [dispatch]);
+  // HOOKS
+  const { data: projectList } = useFetchProjectHooks({});
 
   const projectExtractFunction = () =>
     projectList?.map((item) => ({
@@ -62,7 +60,7 @@ const WorkExport = ({ open, setOpen, mode, setIsFilterIsApply }: TProps) => {
   const download = (values: IWorkFilter) => {
     const fields = [
       "title",
-      "state",
+      "status",
       "startDate",
       "endDate",
       "project.title",
@@ -84,8 +82,7 @@ const WorkExport = ({ open, setOpen, mode, setIsFilterIsApply }: TProps) => {
   };
 
   const handleFilter = (values: IWorkFilter) => {
-    dispatch(fetchWorkThunk(values));
-    setIsFilterIsApply(true)
+    display(values);
     setOpen(false);
   };
 
@@ -102,7 +99,6 @@ const WorkExport = ({ open, setOpen, mode, setIsFilterIsApply }: TProps) => {
       startDate: null,
       endDate: null,
     });
-    dispatch(fetchWorkThunk({}));
   };
 
   return (

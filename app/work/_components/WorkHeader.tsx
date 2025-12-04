@@ -1,16 +1,11 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
-import WorkExport from "./work_export";
-import { useState } from "react";
 
 interface IProps {
   setOpen: (open: boolean) => void;
+  setExportOpen: (open: boolean) => void;
 }
 
-const WorkHeader = ({ setOpen }: IProps) => {
-  const [exportOpen, setExportOpen] = useState(false);
-
+const WorkHeader = ({ setOpen, setExportOpen }: IProps) => {
   return (
     <div className="flex items-center justify-between py-2">
       <h1>Work List</h1>
@@ -28,7 +23,6 @@ const WorkHeader = ({ setOpen }: IProps) => {
           Export
         </Button>
       </div>
-      <WorkExport open={exportOpen} setOpen={setExportOpen} mode="Export" />
     </div>
   );
 };

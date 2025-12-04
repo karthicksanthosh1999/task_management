@@ -22,10 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/reduxHooks";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
-import { createWorkThunk, updateWorkThunk } from "@/app/features/workSlices";
-import { fetchProjectsThunk } from "@/app/features/projectSlices";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +34,8 @@ import { MultiSelect } from "@/components/multi-select";
 import { useSession } from "next-auth/react";
 import { IWork } from "@/app/types/workTypes";
 import { useUserFilterUseQuery } from "@/app/users/_hooks/userHooks";
+import { useCreateWorkHook, useUpdateWorkHook } from "../_hooks/worktHooks";
+import { useFetchProjectHooks } from "@/app/projects/_hooks/projectHooks";
 
 type Props = {
   mode?: "create" | "update";
@@ -49,16 +48,11 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
   const { data: session } = useSession();
   const user = session?.user;
 
-  const { projects: projectList } = useAppSelector((state) => state.projects);
-  const dispatch = useAppDispatch();
-
   //HOOKS
-  const { data: usersList, refetch } = useUserFilterUseQuery("Employee", "")
-
-  useEffect(() => {
-    refetch()
-    dispatch(fetchProjectsThunk({}));
-  }, [dispatch]);
+  const { data: usersList } = useUserFilterUseQuery("Employee", "")
+  const { mutate: createWorkMutation } = useCreateWorkHook()
+  const { mutate: updateWorkMutation } = useUpdateWorkHook()
+  const { data: projectList } = useFetchProjectHooks({})
 
   useEffect(() => {
     if (existingWork) {
@@ -75,7 +69,7 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
         userId: user?.id ?? "",
       });
     }
-  }, [existingWork, user]);
+  }, [existingWork, user])
 
   const projectExtractFunction = () =>
     projectList?.map((item) => ({
@@ -101,13 +95,13 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
 
   const onSubmit = (value: TWorkSchemaType) => {
     if (mode === "create") {
-      dispatch(createWorkThunk(value));
+      createWorkMutation(value)
+      toast.loading("Work Creating...", { id: 'createWork' })
       handleClose();
-      toast.success("Work created successfully...🎉");
     } else if (existingWork?.id && value) {
-      dispatch(updateWorkThunk({ work: value, workId: existingWork?.id }));
+      updateWorkMutation({ work: value, id: existingWork?.id })
       handleClose();
-      toast.success("Work update successfully...🎉");
+      toast.loading("Work Updating...", { id: 'updateWork' })
     }
   };
 
@@ -235,6 +229,7 @@ const WorkForm = ({ existingWork, mode, modelOpen, setModelOpen }: Props) => {
                   )}
                 />
               </div>
+
               {/* END DATE */}
               <div className=" space-y-3">
                 <FormLabel>End Date</FormLabel>
