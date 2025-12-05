@@ -11,7 +11,6 @@ import {
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { FormField, FormItem, FormMessage, Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAppDispatch } from "@/app/hooks/reduxHooks";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userValidationSchema } from "@/app/login/schema/loginValidationSchema";
@@ -24,7 +23,6 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const dispatch = useAppDispatch();
   const router = useRouter();
 
   const form = useForm({
@@ -34,8 +32,8 @@ export function LoginForm({
   const handleLogin = async (values: TLoginTypes) => {
     const res = await signIn("credentials", {
       redirect: false,
-      email: values?.email,
-      password: values?.password,
+      email: values?.email ?? "",
+      password: values?.password ?? "",
     });
     if (res?.error) {
       toast.error("Invalid email or password");

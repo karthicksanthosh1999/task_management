@@ -1,42 +1,10 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { useAppSelector } from '../hooks/reduxHooks'
-import ChatComponent from './_components/ChatComponent'
-import OnlineUsers from './_components/OnlineUsers'
-import { IUser } from '../types/userTypes'
-import { socket } from "@/lib/server";
-import AiChatComponent from './_components/AiChatComponent'
-
+import ChatComponent from './_components/ChatComponent';
 
 const page = () => {
-
-    const { user } = useAppSelector(state => state.auth)
-
-    const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
-    const [selectedOnlineUser, setSelectedOnlineUser] = useState<IUser | null>(null)
-    const [selectAiChat, setSelectAiChat] = useState<boolean>(false)
-
-    useEffect(() => {
-        socket.on("online-users", (users: IUser[]) => {
-            setOnlineUsers(users.filter((item) => item.id !== user?.id))
-        })
-
-        return () => {
-            socket.off("online-users")
-        }
-
-    }, [])
     return (
         <div className='flex gap-3'>
-            <OnlineUsers onlineUsers={onlineUsers} selectedOnlineUser={selectedOnlineUser} setSelectedOnlineUser={setSelectedOnlineUser} setSelectAiChat={setSelectAiChat} />
-            {
-                selectedOnlineUser &&
-                <ChatComponent selectedUser={selectedOnlineUser} />
-            }
-            {
-                selectAiChat &&
-                <AiChatComponent />
-            }
+            <ChatComponent />
         </div>
     )
 }

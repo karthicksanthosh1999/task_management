@@ -10,19 +10,30 @@ import { IWorkFilter } from "../types/workTypes";
 import WorkExport from "./_components/work_export";
 
 const page = () => {
+
   // STORED USERS
   const { data: session } = useSession();
-  const user = session?.user;
+  const user = session?.user
 
-  // STATES
+  // STATES 
   const [workOpenForm, setWorkOpenForm] = useState<boolean>(false);
-  const [filteredValues, setFilteredValues] = useState<IWorkFilter>({});
+  const [filteredValues, setFilteredValues] = useState<IWorkFilter>({})
   const [exportOpen, setExportOpen] = useState(false);
 
   // HOOKS
-  const { data: works, isPending: loading } = useFetchWorkHooks(
-    filteredValues!
-  );
+  const { data: works, isPending: loading, refetch } = useFetchWorkHooks(filteredValues)
+
+  useEffect(() => {
+    setFilteredValues((preV) => ({
+      ...preV, userId: user?.id,
+      role: user?.role
+    }))
+  }, [user])
+
+  const handleFilter = useCallback(() => {
+    refetch()
+  }, [])
+
   return (
     <div>
       <WorkHeader setOpen={setWorkOpenForm} setExportOpen={setExportOpen} />
@@ -36,11 +47,13 @@ const page = () => {
         columns={WorkColumns}
         isLoading={loading}
       />
+
       <WorkExport
         open={exportOpen}
         setOpen={setExportOpen}
         mode="Export"
-        display={setFilteredValues}
+        handleFilter={handleFilter}
+        setFilteredValues={setFilteredValues}
       />
     </div>
   );

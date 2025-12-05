@@ -29,23 +29,19 @@ import {
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { IWorkFilter } from "@/app/types/workTypes";
 import { useFetchProjectHooks } from "@/app/projects/_hooks/projectHooks";
-import { useEffect } from "react";
-import { useSession } from "next-auth/react";
 
 type TProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   mode?: "Export" | "Filter";
-  display: (values: IWorkFilter) => void;
+  handleFilter?: (values: IWorkFilter) => void
+  setFilteredValues: (values: IWorkFilter) => void;
 };
 
-const WorkExport = ({ open, setOpen, mode, display }: TProps) => {
-  // STORED USERS
-  const { data: session } = useSession();
-  const user = session?.user;
-
+const WorkExport = ({ open, setOpen, mode, setFilteredValues }: TProps) => {
   // HOOKS
-  const { data: projectList } = useFetchProjectHooks({});
+  const { data: projectList } = useFetchProjectHooks({})
+
 
   const projectExtractFunction = () =>
     projectList?.map((item) => ({
@@ -82,7 +78,7 @@ const WorkExport = ({ open, setOpen, mode, display }: TProps) => {
   };
 
   const handleFilter = (values: IWorkFilter) => {
-    display(values);
+    setFilteredValues(values)
     setOpen(false);
   };
 

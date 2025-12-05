@@ -37,13 +37,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const ROUTES = {
     common: [
       { title: "Dashboard", url: "/dashboard", icon: IconDashboard },
-      { title: "Chat", url: "/chat", icon: IconMessage },
     ],
 
     adminOnly: [
       { title: "Work", url: "/work", icon: IconListDetails },
       { title: "Projects", url: "/projects", icon: IconFolder },
       { title: "Users", url: "/users", icon: IconUser },
+      { title: "Ai-Chat", url: "/chat", icon: IconMessage },
     ],
 
     employeeOnly: [{ title: "Work", url: "/work", icon: IconListDetails }],
